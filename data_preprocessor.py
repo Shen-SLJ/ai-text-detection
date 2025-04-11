@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import numpy as np
 import pandas as pd
 from utils.PathUtils import abs_path_from_project_path
 
@@ -7,10 +10,17 @@ class DataPreprocessor:
     ]
 
     def __init__(self):
-        self.__combined_dataset = None
+        self.__combined_dataset: np.ndarray = np.empty(shape=[0,0])
 
-        self.__load_datasets()
-
-    def __load_datasets(self) -> None:
+    def load_datasets(self) -> DataPreprocessor:
+        # TODO: Convert into a list reading function, and implement cleaning later
         dataset = pd.read_csv(abs_path_from_project_path(self.__DATASET_PATHS[0])) # Temp index 0
-        print(dataset['generated'][0])
+        dataset_numpy = dataset.to_numpy()
+
+        self.__combined_dataset = dataset_numpy
+
+        return self
+
+
+    def combined_dataset_as_numpy_array(self):
+        return self.__combined_dataset
