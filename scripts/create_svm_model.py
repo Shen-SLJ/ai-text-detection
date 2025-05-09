@@ -1,6 +1,5 @@
-from sklearn.calibration import LinearSVC
+from sklearn.svm import LinearSVC
 from sklearn.model_selection import train_test_split
-from utils.bert_embedder import BERTEmbedder
 from utils.pickle_utils import load_from_pickle, save_to_pickle
 import numpy as np
 
@@ -15,6 +14,3 @@ if __name__ == '__main__':
     svm_score = svm.score(X=X_test, y=y_test)
     print(f"SVM Model accuracy: {svm_score:.2f}")
     save_to_pickle(svm, "svm_model.pkl")
-
-# Helpful path management
-# https://stackoverflow.com/a/68299898
