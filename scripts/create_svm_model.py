@@ -13,4 +13,5 @@ if __name__ == '__main__':
     svm.fit(X=X_train, y=y_train)
     svm_score = svm.score(X=X_test, y=y_test)
     print(f"SVM Model accuracy: {svm_score:.2f}")
+
     save_to_pickle(svm, "svm_model.pkl")
