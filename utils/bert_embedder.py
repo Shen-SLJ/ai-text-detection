@@ -14,7 +14,7 @@ class BERTEmbedder:
         )  # https://huggingface.co/docs/transformers/v4.51.3/en/internal/tokenization_utils#transformers.PreTrainedTokenizerBase.from_pretrained
         self.model = BertModel.from_pretrained("bert-base-uncased").to(self.device)
 
-    def get_bert_embedding(self, text: Union[str, list[str]]) -> numpy.ndarray:
+    def get_embedding(self, text: Union[str, list[str]]) -> numpy.ndarray:
         """
         Get BERT embeddings of input text. Embedding obtained from BERT [CLS] token embedding.
         """

@@ -14,9 +14,9 @@ if __name__ == "__main__":
 
     # Convert features and labels to lists
     embedder = BERTEmbedder()
-    embedding = np.empty(shape=(len(features), 768))
+    embeddings = np.empty(shape=(len(features), 768))
     for i, feature in enumerate(features):
-        embedding[i] = embedder.get_bert_embedding(feature)
+        embeddings[i] = embedder.get_embedding(feature)
 
-    save_to_pickle(embedding, EMBEDDING_PICKLE_FILENAME)
+    save_to_pickle(embeddings, EMBEDDING_PICKLE_FILENAME)
     save_to_pickle(labels, LABELS_PICKLE_FILENAME)
