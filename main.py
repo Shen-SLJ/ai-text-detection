@@ -1,8 +1,14 @@
-from data_preprocessor import DataPreprocessor
+from utils.pickle_utils import load_from_pickle
 
 if __name__ == '__main__':
-    data_preprocessor = DataPreprocessor()
-    dataset_numpy = data_preprocessor.load_datasets().combined_dataset_as_numpy_array()
+    load_from_pickle("bert_embeddings.pkl")
+    load_from_pickle("labels.pkl")
+    
+# svm = LinearSVC()
+# svm.fit(X=get_bert_embedding(text), y=labels)
 
-    features = dataset_numpy[:, 0]
-    labels = dataset_numpy[:, 1]
+# test_text = ["good", "bad"]
+# print(svm.predict(get_bert_embedding(test_text)))
+
+# Helpful path management
+# https://stackoverflow.com/a/68299898
