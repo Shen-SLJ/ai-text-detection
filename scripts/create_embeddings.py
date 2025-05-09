@@ -15,8 +15,11 @@ if __name__ == "__main__":
     # Convert features and labels to lists
     embedder = BERTEmbedder()
     embeddings = np.empty(shape=(len(features), 768))
+
     for i, feature in enumerate(features):
         embeddings[i] = embedder.get_embedding(feature)
+        print(f"Progress: {i + 1}/{len(features)}")
 
+    # Save
     save_to_pickle(embeddings, EMBEDDING_PICKLE_FILENAME)
     save_to_pickle(labels, LABELS_PICKLE_FILENAME)

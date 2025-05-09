@@ -5,14 +5,18 @@ from typing import Union
 
 
 class BERTEmbedder:
+    BERT_MODEL_NAME = "bert-base-cased"
+
     def __init__(self):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         print(f"BERT embedder using device: {self.device}")
 
         self.tokenizer = BertTokenizer.from_pretrained(
-            "bert-base-uncased"
+            BERTEmbedder.BERT_MODEL_NAME
         )  # https://huggingface.co/docs/transformers/v4.51.3/en/internal/tokenization_utils#transformers.PreTrainedTokenizerBase.from_pretrained
-        self.model = BertModel.from_pretrained("bert-base-uncased").to(self.device)
+        self.model = BertModel.from_pretrained(BERTEmbedder.BERT_MODEL_NAME).to(
+            self.device
+        )
 
     def get_embedding(self, text: Union[str, list[str]]) -> numpy.ndarray:
         """
@@ -32,6 +36,6 @@ class BERTEmbedder:
             )  # BertModel.forward(), https://huggingface.co/docs/transformers/en/model_doc/bert#transformers.BertModel.forward
 
             # Use [CLS] token embedding, which contains context of entire sentence. .cpu() moves tensor from GPU to CPU mem
-            embeddings = outputs.last_hidden_state[:, 0, :].cpu().numpy()  
+            embeddings = outputs.last_hidden_state[:, 0, :].cpu().numpy()
 
             return embeddings
