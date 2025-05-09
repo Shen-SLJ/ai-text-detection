@@ -5,7 +5,7 @@ from typing import Union
 
 
 class BERTEmbedder:
-    BERT_MODEL_NAME = "bert-base-uncased"
+    BERT_MODEL_NAME = "bert-base-cased"
 
     def __init__(self):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
