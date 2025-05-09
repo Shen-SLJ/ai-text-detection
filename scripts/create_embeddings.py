@@ -10,7 +10,7 @@ if __name__ == "__main__":
     data_preprocessor = DatasetPreprocessor()
     dataset_numpy = data_preprocessor.load_datasets().combined_dataset_as_numpy_array()
     features = dataset_numpy[:, 0]
-    labels = dataset_numpy[:, 1]
+    labels = dataset_numpy[:, 1].astype(int)
 
     # Convert features and labels to lists
     embedder = BERTEmbedder()
