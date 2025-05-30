@@ -3,7 +3,7 @@ from utils.pickle_utils import load_from_pickle
 from utils.bert_embedder import BERTEmbedder
 
 text = [
-    ""
+    "This is definitely a very AI text."
 ]
 
 if __name__ == '__main__':
