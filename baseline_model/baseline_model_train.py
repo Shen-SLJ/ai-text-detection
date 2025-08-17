@@ -27,6 +27,3 @@ linear_svm.fit(X_train, TRAIN_LABELS)
 
 save_to_pickle(linear_svm, SAVED_MODEL_FILENAME)
 
-
-# Reference paper: 
-# Detection of AI-generated Text: An Experimental Study (2024)
