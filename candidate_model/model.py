@@ -11,6 +11,7 @@ from transformers import (
 from datasets import Dataset
 from torch import argmax
 from torch.nn.functional import softmax
+import torch
 
 
 class CandidateModel:
@@ -33,6 +34,16 @@ class CandidateModel:
         self.model = RobertaForSequenceClassification.from_pretrained(
             self.MODEL_SAVE_PATH if load_from_saved else "roberta-base"
         )
+
+        self.__use_cuda_or_warn()
+
+    def __use_cuda_or_warn(self):
+        if torch.cuda.is_available():
+            self.model.to("cuda")
+        else:
+            print(
+                "WARNING: CUDA not available for model training & prediction. Defaulting to CPU."
+            )
 
     def train(self) -> "CandidateModel":
         """

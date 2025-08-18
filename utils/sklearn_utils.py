@@ -1,9 +1,10 @@
 from sklearn.metrics import confusion_matrix
 from numpy import ndarray
+from typing import Union
 
 
 def get_confusion_matrix_as_tuple(
-    true_labels: ndarray | list, pred_labels: ndarray | list
+    true_labels: Union[ndarray, list], pred_labels: Union[ndarray, list]
 ) -> tuple[int, int, int, int]:
     """
     Returns the confusion matrix as a tuple (TN, FP, FN, TP).
