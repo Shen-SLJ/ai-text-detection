@@ -12,7 +12,7 @@ class BaselineModel:
     https://ieeexplore.ieee.org/document/10731116
     """
 
-    SAVED_BASELINE_MODEL_FILENAME = "baseline_model.pkl"
+    SAVED_MODEL_FILENAME = "baseline_model.pkl"
 
     def __init__(self, train_documents: Iterable[str], train_labels: Iterable[int]):
         self.train_documents = train_documents
@@ -31,9 +31,9 @@ class BaselineModel:
         return self
 
     def save(self) -> "BaselineModel":
-        save_to_pickle(self, self.SAVED_BASELINE_MODEL_FILENAME)
+        save_to_pickle(self, self.SAVED_MODEL_FILENAME)
 
-        print(f"Baseline model saved to {self.SAVED_BASELINE_MODEL_FILENAME}")
+        print(f"Baseline model saved to {self.SAVED_MODEL_FILENAME}")
 
         return self
 

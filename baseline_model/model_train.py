@@ -1,4 +1,4 @@
-from baseline_model.baseline_model import BaselineModel
+from baseline_model.model import BaselineModel
 from dataset_processing.datasets import get_train_dataset
 from sklearn.model_selection import train_test_split
 from utils.sklearn_utils import get_confusion_matrix_as_tuple
