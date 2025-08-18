@@ -1,7 +1,6 @@
 from baseline_model.model import BaselineModel
 from dataset_processing.datasets import get_eval_dataset
-from utils.sklearn_utils import get_confusion_matrix_as_tuple
-from utils.metric_utils import print_important_metrics
+from utils.metric_utils import print_important_metrics, get_confusion_matrix_as_tuple
 from utils.pickle_utils import load_from_pickle
 
 
