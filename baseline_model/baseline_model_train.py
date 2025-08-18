@@ -1,11 +1,11 @@
 from baseline_model.baseline_model import BaselineModel
-from dataset_processing.collate_datasets import get_collated_dataset
+from dataset_processing.datasets import get_train_dataset
 from sklearn.model_selection import train_test_split
 from utils.sklearn_utils import get_confusion_matrix_as_tuple
 from utils.metric_utils import print_important_metrics
 
 
-documents, labels = get_collated_dataset()
+documents, labels = get_train_dataset()
 X_train, X_test, y_train, y_test = train_test_split(
     documents, labels, test_size=0.2, random_state=0
 )
