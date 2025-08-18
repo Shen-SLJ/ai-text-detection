@@ -1,8 +1,7 @@
 from baseline_model.model import BaselineModel
 from dataset_processing.datasets import get_train_dataset
 from sklearn.model_selection import train_test_split
-from utils.sklearn_utils import get_confusion_matrix_as_tuple
-from utils.metric_utils import print_important_metrics
+from utils.metric_utils import print_important_metrics, get_confusion_matrix_as_tuple
 
 
 documents, labels = get_train_dataset()

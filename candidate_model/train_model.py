@@ -1,11 +1,15 @@
 from candidate_model.model import CandidateModel
 from dataset_processing.datasets import get_train_dataset
 from sklearn.model_selection import train_test_split
-from utils.sklearn_utils import get_confusion_matrix_as_tuple
-from utils.metric_utils import print_important_metrics
+from utils.metric_utils import print_important_metrics, get_confusion_matrix_as_tuple
 
 
 documents, labels = get_train_dataset()
+
+# Temp test code
+documents = documents[0:10]
+labels = labels[0:10]
+
 X_train, X_test, y_train, y_test = train_test_split(
     documents, labels, test_size=0.2, random_state=0
 )

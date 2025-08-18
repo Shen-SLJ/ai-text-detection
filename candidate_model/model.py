@@ -1,7 +1,5 @@
 from typing import List
-from utils.pickle_utils import save_to_pickle
 from utils.path_utils import abs_path_from_project_path
-from numpy import ndarray
 from transformers import (
     RobertaForSequenceClassification,
     RobertaTokenizer,
@@ -11,7 +9,7 @@ from transformers import (
 from datasets import Dataset
 from torch import argmax
 from torch.nn.functional import softmax
-import torch
+from utils.gpu_utils import is_gpu_available
 
 
 class CandidateModel:
@@ -27,7 +25,6 @@ class CandidateModel:
     ):
         self.train_documents = train_documents
         self.train_labels = train_labels
-
         self.tokenizer: RobertaTokenizer = RobertaTokenizer.from_pretrained(
             "roberta-base"
         )
@@ -35,22 +32,19 @@ class CandidateModel:
             self.MODEL_SAVE_PATH if load_from_saved else "roberta-base"
         )
 
-        self.__use_cuda_or_warn()
+        self.use_cpu = not is_gpu_available()
+        self.__model_use_cuda_or_warn()
 
-    def __use_cuda_or_warn(self):
-        if torch.cuda.is_available():
+    def __model_use_cuda_or_warn(self):
+        if not self.use_cpu:
             self.model.to("cuda")
-        else:
-            print(
-                "WARNING: CUDA not available for model training & prediction. Defaulting to CPU."
-            )
 
     def train(self) -> "CandidateModel":
         """
         Train model and save checkpoint.
         """
         training_args = TrainingArguments(
-            output_dir=self.MODEL_SAVE_PATH,
+            output_dir=self.MODEL_SAVE_PATH, use_cpu=self.use_cpu
         )
 
         tokenized_train_docs = self.tokenizer(
