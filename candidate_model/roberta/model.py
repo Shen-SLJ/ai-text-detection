@@ -80,6 +80,6 @@ class CandidateRobertaModel:
         output = self.model(**X)
 
         predictions = softmax(output.logits, dim=-1)
-        predictions_list = argmax(predictions).tolist()
+        predictions_list = argmax(predictions, dim=-1).tolist()
 
         return predictions_list
