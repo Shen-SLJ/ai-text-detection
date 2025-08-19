@@ -21,8 +21,8 @@ class CandidateRobertaModel:
 
     def __init__(
         self,
-        train_documents: List[str],
-        train_labels: List[int],
+        train_documents: List[str] = [],
+        train_labels: List[int] = [],
         load_from_saved: bool = False,
     ):
         self.train_documents = train_documents
@@ -74,6 +74,7 @@ class CandidateRobertaModel:
         return self
 
     def predict(self, documents: List[str]) -> List[int]:
+        """Run prediction. Documents automatically batched."""
         X = self.tokenizer(
             documents, padding=True, truncation=True, return_tensors="pt"
         )
@@ -81,8 +82,7 @@ class CandidateRobertaModel:
 
         X_dataset = Dataset.from_dict(X)
         X_data_loader = DataLoader(
-            dataset=X_dataset, 
-            batch_size=self.PREDICTION_BATCH_SIZE
+            dataset=X_dataset, batch_size=self.PREDICTION_BATCH_SIZE
         )
 
         all_predictions = []
@@ -92,7 +92,7 @@ class CandidateRobertaModel:
 
             predictions = softmax(output.logits, dim=-1)
             predictions_list = argmax(predictions, dim=-1).tolist()
-            
+
             all_predictions.extend(predictions_list)
 
         return predictions_list
