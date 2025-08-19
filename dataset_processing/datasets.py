@@ -27,7 +27,7 @@ def __concatenate_dataset(
 ) -> tuple[ndarray, ndarray]:
     X = np.array([])
     y = np.array(
-        [], dtype=np.int64
+        [], dtype=np.int8
     )  # dtype is integer to be explicit for training. Prevent mismatched tensor error for transformers
 
     for dataset in dataset:

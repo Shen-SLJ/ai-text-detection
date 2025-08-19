@@ -28,10 +28,15 @@ class CandidateRobertaModel:
         self,
         train_documents: List[str] = [],
         train_labels: List[int] = [],
+        eval_documents: List[str] = [],
+        eval_labels: List[int] = [],
         load_checkpoint_number: Optional[int] = None,
     ):
         self.train_documents = train_documents
         self.train_labels = train_labels
+        self.eval_documents = eval_documents
+        self.eval_labels = eval_labels
+
         self.tokenizer: RobertaTokenizer = RobertaTokenizer.from_pretrained(
             "roberta-base"
         )
@@ -54,31 +59,44 @@ class CandidateRobertaModel:
         Train model and save checkpoint.
         """
         training_args = TrainingArguments(
-            output_dir=self.MODEL_SAVE_PATH, use_cpu=self.use_cpu
+            output_dir=self.MODEL_SAVE_PATH, 
+            use_cpu=self.use_cpu,
+            eval_strategy="steps",
+            eval_steps=100,
+            num_train_epochs=3,
+            per_device_train_batch_size=16,
+            per_device_eval_batch_size=16,
+            learning_rate=5e-6
         )
 
-        tokenized_train_docs = self.tokenizer(
-            self.train_documents, padding=True, truncation=True, return_tensors="pt"
-        )
-
-        dataset_dict = {
-            "input_ids": tokenized_train_docs["input_ids"],
-            "attention_mask": tokenized_train_docs["attention_mask"],
-            "labels": self.train_labels,
-        }
-
-        train_dataset = Dataset.from_dict(dataset_dict)
+        train_dataset = self.__get_dataset(self.train_documents, self.train_labels)
+        eval_dataset = self.__get_dataset(self.eval_documents, self.eval_labels)
 
         trainer = Trainer(
             model=self.model,
             args=training_args,
             train_dataset=train_dataset,
+            eval_dataset=eval_dataset,
             processing_class=self.tokenizer,
         )
 
         trainer.train()
 
         return self
+
+    def __get_dataset(self, docs: List[str], labels: List[int]) -> Dataset:
+        tokenized_docs = self.tokenizer(
+            docs, padding=True, truncation=True, return_tensors="pt"
+        )
+        dataset_dict = {
+            "input_ids": tokenized_docs["input_ids"],
+            "attention_mask": tokenized_docs["attention_mask"],
+            "labels": self.train_labels,
+        }
+
+        dataset = Dataset.from_dict(dataset_dict)
+
+        return dataset
 
     def predict(self, documents: List[str]) -> List[int]:
         """Run prediction. Documents automatically batched."""
