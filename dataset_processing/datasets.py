@@ -13,9 +13,7 @@ EVAL_DATASETS = [
 
 def get_train_dataset() -> tuple[ndarray, ndarray]:
     """Load training dataset and return features and labels respectively."""
-    X, y = __concatenate_dataset(TRAIN_DATASETS)
-
-    return X, y
+    return DAIGTDataset.get()
 
 def get_eval_dataset() -> tuple[ndarray, ndarray]:
     """Load evaluation dataset and return features and labels respectively."""
@@ -23,6 +21,7 @@ def get_eval_dataset() -> tuple[ndarray, ndarray]:
 
     return X, y
 
+# TODO: This breaks training for transformers for some reason
 def __concatenate_dataset(dataset: list[tuple[ndarray, ndarray]]) -> tuple[ndarray, ndarray]:
     X = np.array([])
     y = np.array([])
