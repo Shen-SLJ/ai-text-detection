@@ -6,17 +6,22 @@ from utils.metric_utils import print_important_metrics, get_confusion_matrix_as_
 
 documents, labels = get_train_dataset()
 
-X_train, X_test, y_train, y_test = train_test_split(
+X_train, X_temp, y_train, y_temp = train_test_split(
     documents, labels, test_size=0.2, random_state=0
 )
-X_train, X_test, y_train, y_test = (
+X_eval, X_test, y_eval, y_test = train_test_split(
+    X_temp, y_temp, test_size=0.5, random_state=0
+)
+X_train, X_test, X_eval, y_train, y_test, y_eval = (
     X_train.tolist(),
     X_test.tolist(),
+    X_eval.tolist(),
     y_train.tolist(),
     y_test.tolist(),
+    y_eval.tolist(),
 )
 
-candidate_model = CandidateRobertaModel(X_train, y_train).train()
+candidate_model = CandidateRobertaModel(X_train, y_train, X_eval, y_eval).train()
 
 prediction = candidate_model.predict(X_test)
 

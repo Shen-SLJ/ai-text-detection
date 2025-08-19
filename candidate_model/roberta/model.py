@@ -91,7 +91,7 @@ class CandidateRobertaModel:
         dataset_dict = {
             "input_ids": tokenized_docs["input_ids"],
             "attention_mask": tokenized_docs["attention_mask"],
-            "labels": self.train_labels,
+            "labels": labels,
         }
 
         dataset = Dataset.from_dict(dataset_dict)
