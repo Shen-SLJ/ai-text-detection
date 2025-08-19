@@ -33,6 +33,7 @@ class CandidateRobertaModel:
         )
 
         self.use_cpu = not is_gpu_available()
+        self.device = 'cuda' if not self.use_cpu else 'cpu'
         self.__model_use_cuda_or_warn()
 
     def __model_use_cuda_or_warn(self):
@@ -75,7 +76,7 @@ class CandidateRobertaModel:
             documents, padding=True, truncation=True, return_tensors="pt"
         )
 
-        output = self.model(**X)
+        output = self.model(**X).to(self.device)
 
         predictions = softmax(output.logits, dim=-1)
         predictions_list = argmax(predictions).tolist()
