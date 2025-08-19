@@ -5,8 +5,7 @@ from dataset_processing.pratyushi.process_dataset import PratyushiDataset
 from dataset_processing.okemdad_ai.process_dataset import OkemdadDataset
 
 TRAIN_DATASETS = [
-    DAIGTDataset.get(),
-    OkemdadDataset.get(10000)
+    DAIGTDataset.get()
 ]
 EVAL_DATASETS = [
     PratyushiDataset.get()
