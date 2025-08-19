@@ -1,3 +1,6 @@
 .venv
 __pycache__
 saved
+
+# github LFS too expensive
+dataset.csv 
