@@ -4,16 +4,16 @@ from dataset_processing.daigt.process_dataset import DAIGTDataset
 from dataset_processing.pratyushi.process_dataset import PratyushiDataset
 from dataset_processing.okemdad_ai.process_dataset import OkemdadDataset
 
-TRAIN_DATASETS = [
-    DAIGTDataset.get()
-]
-EVAL_DATASETS = [
-    PratyushiDataset.get()
-]
+TRAIN_DATASETS = [DAIGTDataset.get()]
+EVAL_DATASETS = [PratyushiDataset.get()]
+
 
 def get_train_dataset() -> tuple[ndarray, ndarray]:
     """Load training dataset and return features and labels respectively."""
-    return DAIGTDataset.get()
+    X, y = __concatenate_dataset(TRAIN_DATASETS)
+
+    return X, y
+
 
 def get_eval_dataset() -> tuple[ndarray, ndarray]:
     """Load evaluation dataset and return features and labels respectively."""
@@ -21,10 +21,14 @@ def get_eval_dataset() -> tuple[ndarray, ndarray]:
 
     return X, y
 
-# TODO: This breaks training for transformers for some reason
-def __concatenate_dataset(dataset: list[tuple[ndarray, ndarray]]) -> tuple[ndarray, ndarray]:
+
+def __concatenate_dataset(
+    dataset: list[tuple[ndarray, ndarray]],
+) -> tuple[ndarray, ndarray]:
     X = np.array([])
-    y = np.array([])
+    y = np.array(
+        [], dtype=np.int64
+    )  # dtype is integer to be explicit for training. Prevent mismatched tensor error for transformers
 
     for dataset in dataset:
         dataset_X = dataset[0]
@@ -34,4 +38,3 @@ def __concatenate_dataset(dataset: list[tuple[ndarray, ndarray]]) -> tuple[ndarr
         y = np.concatenate((y, dataset_y))
 
     return X, y
-    
