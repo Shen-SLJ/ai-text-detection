@@ -14,6 +14,8 @@ class OkemdadDataset:
     """
     dataset = read_parquet("hf://datasets/okemdad/ai_text_dataset/data/train-00000-of-00001.parquet")
 
+    dataset.dropna(inplace=True)
+
     if sample_n:
       dataset = dataset.sample(sample_n)
     
