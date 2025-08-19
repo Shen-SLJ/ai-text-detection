@@ -5,6 +5,7 @@ from transformers import (
     RobertaTokenizer,
     TrainingArguments,
     Trainer,
+    DataCollatorWithPadding,
 )
 from datasets import Dataset
 from torch import argmax
@@ -86,9 +87,12 @@ class CandidateRobertaModel:
         )
         X = {k: v.to(self.device) for k, v in X.items()}
 
+        collator = DataCollatorWithPadding(self.tokenizer)
         X_dataset = Dataset.from_dict(X)
         X_data_loader = DataLoader(
-            dataset=X_dataset, batch_size=self.PREDICTION_BATCH_SIZE
+            dataset=X_dataset,
+            batch_size=self.PREDICTION_BATCH_SIZE,
+            collate_fn=collator,
         )
 
         all_predictions = []
