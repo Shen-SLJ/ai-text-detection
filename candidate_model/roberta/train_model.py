@@ -6,10 +6,6 @@ from utils.metric_utils import print_important_metrics, get_confusion_matrix_as_
 
 documents, labels = get_train_dataset()
 
-# Temp test code
-documents = documents[0:10]
-labels = labels[0:10]
-
 X_train, X_test, y_train, y_test = train_test_split(
     documents, labels, test_size=0.2, random_state=0
 )
