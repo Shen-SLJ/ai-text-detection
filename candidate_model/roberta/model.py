@@ -12,8 +12,8 @@ from torch.nn.functional import softmax
 from utils.gpu_utils import is_gpu_available
 
 
-class CandidateModel:
-    """Candidate model for text classification using RoBERTa"""
+class CandidateRobertaModel:
+    """Text classification model using RoBERTa"""
 
     MODEL_SAVE_PATH = abs_path_from_project_path("saved/candidate_model_roberta")
 
@@ -39,7 +39,7 @@ class CandidateModel:
         if not self.use_cpu:
             self.model.to("cuda")
 
-    def train(self) -> "CandidateModel":
+    def train(self) -> "CandidateRobertaModel":
         """
         Train model and save checkpoint.
         """

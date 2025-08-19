@@ -1,4 +1,4 @@
-from candidate_model.model import CandidateModel
+from candidate_model.roberta.model import CandidateRobertaModel
 from dataset_processing.datasets import get_train_dataset
 from sklearn.model_selection import train_test_split
 from utils.metric_utils import print_important_metrics, get_confusion_matrix_as_tuple
@@ -20,7 +20,7 @@ X_train, X_test, y_train, y_test = (
     y_test.tolist(),
 )
 
-candidate_model = CandidateModel(X_train, y_train).train()
+candidate_model = CandidateRobertaModel(X_train, y_train).train()
 
 prediction = candidate_model.predict(X_test)
 
