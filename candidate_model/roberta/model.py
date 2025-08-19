@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from utils.path_utils import abs_path_from_project_path
 from transformers import (
     RobertaForSequenceClassification,
@@ -14,7 +14,11 @@ from utils.gpu_utils import is_gpu_available
 
 
 class CandidateRobertaModel:
-    """Text classification model using RoBERTa"""
+    """Text classification model using RoBERTa
+
+    Args:
+        load_checkpoint_number: If specified will load the model with the specific checkpoint number
+    """
 
     MODEL_SAVE_PATH = abs_path_from_project_path("saved/candidate_model_roberta")
     PREDICTION_BATCH_SIZE = 8
@@ -23,7 +27,7 @@ class CandidateRobertaModel:
         self,
         train_documents: List[str] = [],
         train_labels: List[int] = [],
-        load_from_saved: bool = False,
+        load_checkpoint_number: Optional[int] = None,
     ):
         self.train_documents = train_documents
         self.train_labels = train_labels
@@ -31,7 +35,9 @@ class CandidateRobertaModel:
             "roberta-base"
         )
         self.model = RobertaForSequenceClassification.from_pretrained(
-            self.MODEL_SAVE_PATH if load_from_saved else "roberta-base"
+            f"{self.MODEL_SAVE_PATH}/checkpoint-{load_checkpoint_number}"
+            if load_checkpoint_number
+            else "roberta-base"
         )
 
         self.use_cpu = not is_gpu_available()
@@ -95,4 +101,4 @@ class CandidateRobertaModel:
 
             all_predictions.extend(predictions_list)
 
-        return predictions_list
+        return all_predictions
