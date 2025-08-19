@@ -85,7 +85,6 @@ class CandidateRobertaModel:
         X = self.tokenizer(
             documents, padding=True, truncation=True, return_tensors="pt"
         )
-        X = {k: v.to(self.device) for k, v in X.items()}
 
         collator = DataCollatorWithPadding(self.tokenizer)
         X_dataset = Dataset.from_dict(X)
@@ -98,6 +97,8 @@ class CandidateRobertaModel:
         all_predictions = []
 
         for batch in X_data_loader:
+            batch = {k: v.to(self.device) for k, v in X.items()}
+            
             output = self.model(**batch)
 
             predictions = softmax(output.logits, dim=-1)
