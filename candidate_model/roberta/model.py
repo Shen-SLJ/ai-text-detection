@@ -37,6 +37,8 @@ class CandidateRobertaModel:
         self.eval_documents = eval_documents
         self.eval_labels = eval_labels
 
+        print(f"len_train: {len(self.train_documents)}, len_eval: {len(self.eval_documents)}")
+
         self.tokenizer: RobertaTokenizer = RobertaTokenizer.from_pretrained(
             "roberta-base"
         )
@@ -68,7 +70,8 @@ class CandidateRobertaModel:
             num_train_epochs=3,
             per_device_train_batch_size=16,
             per_device_eval_batch_size=16,
-            learning_rate=5e-6
+            learning_rate=5e-6,
+            weight_decay=0.01
         )
 
         train_dataset = self.__get_dataset(self.train_documents, self.train_labels)
