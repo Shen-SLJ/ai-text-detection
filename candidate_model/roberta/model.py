@@ -63,6 +63,8 @@ class CandidateRobertaModel:
             use_cpu=self.use_cpu,
             eval_strategy="steps",
             eval_steps=100,
+            logging_steps=100,
+            save_steps=250,
             num_train_epochs=3,
             per_device_train_batch_size=16,
             per_device_eval_batch_size=16,
