@@ -1,10 +1,10 @@
 import pandas
 from pandas import Series
-from dataset_processing.daigt.process_dataset import DAIGTDataset
+from dataset_processing.human_vs_llm.process_dataset import HumanVsLLMDataset
 from dataset_processing.pratyushi.process_dataset import PratyushiDataset
 
 TRAIN_DATASETS = [
-    DAIGTDataset.get_randomly_sampled(
+    HumanVsLLMDataset.get_randomly_sampled(
         human_sample_n=10000,
         ai_sample_n=10000
     )
@@ -16,7 +16,7 @@ def get_train_dataset() -> tuple[Series, Series]:
     """Load training dataset and return features (strings) and labels (ints) respectively."""
     X, y = __concatenate_dataset(TRAIN_DATASETS)
 
-    __print_dataset_composition(X, y, "Test")
+    __print_dataset_composition(X, y, "Train")
 
     return X, y
 
