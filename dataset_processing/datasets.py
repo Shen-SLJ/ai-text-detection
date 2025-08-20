@@ -2,7 +2,6 @@ import pandas
 from pandas import Series
 from dataset_processing.daigt.process_dataset import DAIGTDataset
 from dataset_processing.pratyushi.process_dataset import PratyushiDataset
-from dataset_processing.okemdad_ai.process_dataset import OkemdadDataset
 
 TRAIN_DATASETS = [
     DAIGTDataset.get_randomly_sampled(

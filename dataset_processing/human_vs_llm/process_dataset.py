@@ -8,7 +8,7 @@ from typing import Optional
 DATASET_PATH = abs_path_from_project_path("dataset_processing/daigt/dataset.parquet")
 
 
-class HumanVsLLMDatasset:
+class HumanVsLLMDataset:
     """
     Human vs LLM Dataset.
 
