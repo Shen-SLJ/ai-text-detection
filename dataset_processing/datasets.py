@@ -1,44 +1,45 @@
-import numpy as np
-from numpy import ndarray
+import pandas
+from pandas import Series
 from dataset_processing.daigt.process_dataset import DAIGTDataset
 from dataset_processing.pratyushi.process_dataset import PratyushiDataset
 from dataset_processing.okemdad_ai.process_dataset import OkemdadDataset
 
 TRAIN_DATASETS = [
-    DAIGTDataset.get(with_label=0),
-    DAIGTDataset.get(with_label=1, sample_n=14000),
-    OkemdadDataset.get(sample_n=14000)
+    DAIGTDataset.get(),
+    OkemdadDataset.get(sample_n=9000)
 ]
 EVAL_DATASETS = [PratyushiDataset.get()]
 
 
-def get_train_dataset() -> tuple[ndarray, ndarray]:
-    """Load training dataset and return features and labels respectively."""
+def get_train_dataset() -> tuple[Series, Series]:
+    """Load training dataset and return features (strings) and labels (ints) respectively."""
     X, y = __concatenate_dataset(TRAIN_DATASETS)
+
+    print(f"Train dataset composition: Y -> {y.value_counts()}")
 
     return X, y
 
 
-def get_eval_dataset() -> tuple[ndarray, ndarray]:
-    """Load evaluation dataset and return features and labels respectively."""
+def get_eval_dataset() -> tuple[Series, Series]:
+    """Load evaluation dataset and return features (strings) and labels (ints) respectively."""
     X, y = __concatenate_dataset(EVAL_DATASETS)
+
+    print(f"Eval dataset composition: Y -> {y.value_counts()}")
 
     return X, y
 
 
 def __concatenate_dataset(
-    dataset: list[tuple[ndarray, ndarray]],
-) -> tuple[ndarray, ndarray]:
-    X = np.array([])
-    y = np.array(
-        [], dtype=np.int8
-    )  # dtype is integer to be explicit for training. Prevent mismatched tensor error for transformers
+    datasets: list[tuple[Series, Series]],
+) -> tuple[Series, Series]:
+    X_list = []
+    y_list = []
 
-    for dataset in dataset:
-        dataset_X = dataset[0]
-        dataset_y = dataset[1]
+    for dataset in datasets:
+        X_list.append(dataset[0])
+        y_list.append(dataset[1])
 
-        X = np.concatenate((X, dataset_X))
-        y = np.concatenate((y, dataset_y))
+    X = pandas.concat(X_list, axis=0, ignore_index=True)
+    y = pandas.concat(y_list, axis=0, ignore_index=True)
 
     return X, y

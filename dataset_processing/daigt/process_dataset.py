@@ -6,7 +6,7 @@ from utils.dataset_utils import (
     sample_dataset_based_on_column_value,
     correct_imbalance_by_dropping,
 )
-from typing import Optional, Literal
+from typing import Optional
 
 DATASET_PATH = abs_path_from_project_path("dataset_processing/daigt/dataset.csv")
 
@@ -18,8 +18,8 @@ class DAIGTDataset:
     """
 
     @staticmethod
-    def get(balanced: bool = False) -> tuple[ndarray, ndarray]:
-        """Load dataset and return features and labels respectively."""
+    def get(balanced: bool = False) -> tuple[Series, Series]:
+        """Load dataset and return features (strings) and labels (ints) respectively."""
 
         dataset = read_csv(DATASET_PATH)
 
@@ -29,7 +29,7 @@ class DAIGTDataset:
         X = dataset["text"]
         y = dataset["label"]
 
-        return X.to_numpy(), y.to_numpy()
+        return X, y
 
     @staticmethod
     def get_randomly_sampled(
@@ -39,7 +39,7 @@ class DAIGTDataset:
         ai_random_state: Optional[int] = 0,
     ) -> tuple[Series, Series]:
         """Load dataset and get randomly sampled entries across the dataset for both ai generated & human generated partitions. Returns
-        feature input and labels respectively.
+        feature input (string) and labels (ints) respectively.
         """
         dataset = read_csv(DATASET_PATH)
 

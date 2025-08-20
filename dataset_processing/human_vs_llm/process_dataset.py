@@ -23,7 +23,7 @@ class HumanVsLLMDatasset:
         ai_random_state: Optional[int] = 0,
     ) -> tuple[Series, Series]:
         """Load dataset and get randomly sampled entries across the dataset for both ai generated & human generated partitions. Returns
-        feature input and labels respectively.
+        feature input (strings) and labels (ints) respectively.
         """
         dataset = read_parquet(DATASET_PATH)
 
