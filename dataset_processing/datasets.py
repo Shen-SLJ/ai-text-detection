@@ -41,7 +41,7 @@ def __concatenate_dataset(
         y_list.append(dataset[1])
 
     X = pandas.concat(X_list, axis=0)
-    y = pandas.concat(y_list, axis=0)
+    y = pandas.concat(y_list, axis=0).astype(int)
 
     return X, y
 
