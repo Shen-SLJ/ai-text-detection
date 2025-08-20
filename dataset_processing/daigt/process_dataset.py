@@ -42,6 +42,4 @@ class DAIGTDataset:
         X = dataset["text"]
         y = dataset["label"]
 
-        print(f"sample_n: {sample_n}, with_label: {with_label}, dataset value count: {dataset['label'].value_counts()}, dataset[first 3 rows]: {dataset.head(3)}")
-
         return X.to_numpy(), y.to_numpy()
