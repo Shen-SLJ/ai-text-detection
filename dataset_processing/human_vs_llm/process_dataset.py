@@ -5,7 +5,7 @@ from utils.dataset_utils import sample_dataset_based_on_column_value
 from typing import Optional
 
 
-DATASET_PATH = abs_path_from_project_path("dataset_processing/daigt/dataset.parquet")
+DATASET_PATH = abs_path_from_project_path("dataset_processing/human_vs_llm/dataset.parquet")
 
 
 class HumanVsLLMDataset:
@@ -49,7 +49,7 @@ class HumanVsLLMDataset:
             [human_dataset, ai_dataset], axis=0
         )
 
-        combined_dataset.loc[combined_dataset["source"] == "Human", "source"] = 0
         combined_dataset.loc[combined_dataset["source"] != "Human", "source"] = 1
+        combined_dataset.loc[combined_dataset["source"] == "Human", "source"] = 0
 
         return combined_dataset["text"], combined_dataset["source"]
