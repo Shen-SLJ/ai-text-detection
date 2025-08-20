@@ -5,9 +5,9 @@ from dataset_processing.pratyushi.process_dataset import PratyushiDataset
 from dataset_processing.okemdad_ai.process_dataset import OkemdadDataset
 
 TRAIN_DATASETS = [
-    DAIGTDataset.get(with_label="0"),
-    DAIGTDataset.get(with_label="1", sample_n=23000),
-    OkemdadDataset.get(sample_n=23000),
+    DAIGTDataset.get(with_label=0),
+    DAIGTDataset.get(with_label=1, sample_n=14000),
+    OkemdadDataset.get(sample_n=14000)
 ]
 EVAL_DATASETS = [PratyushiDataset.get()]
 

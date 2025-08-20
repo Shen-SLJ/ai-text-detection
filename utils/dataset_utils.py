@@ -25,7 +25,7 @@ def correct_imbalance_by_dropping(
 def get_dataset_or_sample_dataset_with_label(
     dataset: DataFrame,
     sample_n: Optional[int] = None,
-    with_label: Optional[str] = None,
+    with_label: Optional[int] = None,
     random_state: Optional[int] = 0,
 ) -> DataFrame:
     """
@@ -38,14 +38,14 @@ def get_dataset_or_sample_dataset_with_label(
     dataset_to_use = dataset
     dataset_matching_label = dataset[dataset["label"] == with_label]
 
-    if sample_n:
+    if sample_n is not None:
         if with_label:
             dataset_to_use = dataset_matching_label.sample(
                 sample_n, random_state=random_state
             )
         else:
             dataset_to_use = dataset.sample(sample_n, random_state=random_state)
-    elif with_label:
+    elif with_label is not None:
         dataset_to_use = dataset_matching_label
 
     return dataset_to_use

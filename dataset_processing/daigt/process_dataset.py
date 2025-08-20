@@ -16,7 +16,7 @@ class DAIGTDataset:
     def get(
         balanced: bool = False,
         sample_n: Optional[int] = None,
-        with_label: Literal["0", "1", None] = None,
+        with_label: Literal[0, 1, None] = None,
         random_state: Optional[int] = 0,
     ) -> tuple[ndarray, ndarray]:
         """Load DAIGT dataset and return features and labels respectively.
@@ -41,5 +41,7 @@ class DAIGTDataset:
 
         X = dataset["text"]
         y = dataset["label"]
+
+        print(f"sample_n: {sample_n}, with_label: {with_label}, dataset value count: {dataset['label'].value_counts()}, dataset[first 3 rows]: {dataset.head(3)}")
 
         return X.to_numpy(), y.to_numpy()
