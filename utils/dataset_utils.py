@@ -26,6 +26,7 @@ def get_dataset_or_sample_dataset_with_label(
     dataset: DataFrame,
     sample_n: Optional[int] = None,
     with_label: Optional[int] = None,
+    label_identifier: Optional[str] = None,
     random_state: Optional[int] = 0,
 ) -> DataFrame:
     """
@@ -36,7 +37,7 @@ def get_dataset_or_sample_dataset_with_label(
         with_label: Set to get entries with the label only. Don't set to consider all labels.
     """
     dataset_to_use = dataset
-    dataset_matching_label = dataset[dataset["label"] == with_label]
+    dataset_matching_label = dataset[dataset[label_identifier] == with_label]
 
     if sample_n is not None:
         if with_label:

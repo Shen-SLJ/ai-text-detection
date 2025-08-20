@@ -36,6 +36,7 @@ class DAIGTDataset:
             dataset=dataset,
             sample_n=sample_n,
             with_label=with_label,
+            label_identifier="label",
             random_state=random_state,
         )
 
