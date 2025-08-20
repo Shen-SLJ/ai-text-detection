@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Literal
 from utils.path_utils import abs_path_from_project_path
 from transformers import (
     RobertaForSequenceClassification,
@@ -9,13 +9,13 @@ from transformers import (
 )
 from transformers.trainer_utils import EvalPrediction
 from datasets import Dataset
-from torch import argmax, no_grad, Tensor
-from torch.nn.functional import softmax
 from torch.utils.data import DataLoader
 from utils.gpu_utils import is_gpu_available
 from utils.metric_utils import get_false_positive_rate
 from sklearn.metrics import confusion_matrix
 import evaluate
+import numpy as np
+import torch
 
 
 class CandidateRobertaModel:
@@ -117,7 +117,7 @@ class CandidateRobertaModel:
         self, eval_preds: EvalPrediction
     ) -> dict[str, float]:
         logits, labels = eval_preds
-        predictions = self.__get_predictions_from_logits(logits_tensor=logits)
+        predictions = self.__get_predictions_from_logits(logits, logits_type="np")
 
         accuracy = self.accuracy_metric(predictions=predictions, references=labels)
         recall = self.recall_metric(predictions=predictions, references=labels)
@@ -152,17 +152,22 @@ class CandidateRobertaModel:
         for batch in X_data_loader:
             batch = {k: v.to(self.device) for k, v in batch.items()}
 
-            with no_grad():
+            with torch.no_grad():
                 output = self.model(**batch)
 
-            predictions_list = self.__get_predictions_from_logits(output.logits)
-
+            predictions_list = self.__get_predictions_from_logits(
+                output.logits, logits_type="pt"
+            )
             all_predictions.extend(predictions_list)
 
         return all_predictions
 
-    def __get_predictions_from_logits(self, logits_tensor: Tensor) -> List[int]:
-        predictions = softmax(logits_tensor, dim=-1)
-        predictions_list = argmax(predictions, dim=-1).tolist()
+    def __get_predictions_from_logits(
+        self, logits, logits_type: Literal["pt", "np"]
+    ) -> List[int]:
+        if logits_type == "pt":
+            predictions_list = torch.argmax(logits, dim=-1).tolist()
+        else:
+            predictions_list = np.argmax(logits, axis=-1)
 
         return predictions_list
