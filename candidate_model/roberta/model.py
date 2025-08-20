@@ -8,7 +8,7 @@ from transformers import (
     DataCollatorWithPadding,
 )
 from datasets import Dataset
-from torch import argmax
+from torch import argmax, no_grad
 from torch.nn.functional import softmax
 from torch.utils.data import DataLoader
 from utils.gpu_utils import is_gpu_available
@@ -122,7 +122,8 @@ class CandidateRobertaModel:
         for batch in X_data_loader:
             batch = {k: v.to(self.device) for k, v in X.items()}
             
-            output = self.model(**batch)
+            with no_grad():
+                output = self.model(**batch)
 
             predictions = softmax(output.logits, dim=-1)
             predictions_list = argmax(predictions, dim=-1).tolist()
