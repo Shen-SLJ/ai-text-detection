@@ -71,6 +71,7 @@ class CandidateRobertaModel:
         """
         training_args = TrainingArguments(
             output_dir=self.MODEL_SAVE_PATH,
+            save_total_limit=5,
             use_cpu=self.use_cpu,
             eval_strategy="steps",
             eval_steps=100,
@@ -79,7 +80,7 @@ class CandidateRobertaModel:
             num_train_epochs=3,
             per_device_train_batch_size=16,
             per_device_eval_batch_size=16,
-            learning_rate=5e-6,
+            learning_rate=5e-5,
             weight_decay=0,
         )
 
