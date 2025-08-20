@@ -70,8 +70,8 @@ class CandidateRobertaModel:
             num_train_epochs=3,
             per_device_train_batch_size=16,
             per_device_eval_batch_size=16,
-            learning_rate=5e-6,
-            weight_decay=0.01
+            learning_rate=5e-5,
+            weight_decay=0
         )
 
         train_dataset = self.__get_dataset(self.train_documents, self.train_labels)

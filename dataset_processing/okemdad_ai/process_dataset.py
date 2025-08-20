@@ -6,7 +6,7 @@ from typing import Optional
 class OkemdadDataset:
 
     @staticmethod
-    def get(sample_n: Optional[int] = None) -> tuple[ndarray, ndarray]:
+    def get(sample_n: Optional[int] = None, random_state: Optional[int] = 0) -> tuple[ndarray, ndarray]:
         """Load Okokemdad/ai_text_dataset dataset and return features and labels respectively.
 
         This dataset consists of 100% AI generated text.
@@ -20,7 +20,7 @@ class OkemdadDataset:
         dataset.dropna(inplace=True)
 
         if sample_n:
-            dataset = dataset.sample(sample_n)
+            dataset = dataset.sample(sample_n, random_state=random_state)
 
         X = dataset["text"]
         y = dataset["label"]
