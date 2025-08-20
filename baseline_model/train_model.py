@@ -5,6 +5,8 @@ from utils.metric_utils import print_important_metrics, get_confusion_matrix_as_
 
 
 documents, labels = get_train_dataset()
+documents, labels = documents.to_numpy(), labels.to_numpy()
+
 X_train, X_test, y_train, y_test = train_test_split(
     documents, labels, test_size=0.2, random_state=0
 )
