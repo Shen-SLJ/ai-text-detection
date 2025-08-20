@@ -36,7 +36,7 @@ class HumanVsLLMDatasset:
             random_state=human_random_state,
         )
 
-        ai_dataset = human_dataset = sample_dataset_based_on_column_value(
+        ai_dataset = sample_dataset_based_on_column_value(
             dataset=dataset,
             sample_n=ai_sample_n,
             column_identifier="source",
@@ -46,7 +46,7 @@ class HumanVsLLMDatasset:
         )
 
         combined_dataset = pandas.concat(
-            [human_dataset, ai_dataset], axis=0, ignore_index=True
+            [human_dataset, ai_dataset], axis=0
         )
 
         combined_dataset.loc[combined_dataset["source"] == "Human", "source"] = 0

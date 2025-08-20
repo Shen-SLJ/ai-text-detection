@@ -52,7 +52,7 @@ class DAIGTDataset:
             random_state=human_random_state,
         )
 
-        ai_dataset = human_dataset = sample_dataset_based_on_column_value(
+        ai_dataset = sample_dataset_based_on_column_value(
             dataset=dataset,
             sample_n=ai_sample_n,
             column_identifier="label",
@@ -62,7 +62,7 @@ class DAIGTDataset:
         )
 
         combined_dataset = pandas.concat(
-            [human_dataset, ai_dataset], axis=0, ignore_index=True
+            [human_dataset, ai_dataset], axis=0
         )
 
         return combined_dataset["text"], combined_dataset["label"]

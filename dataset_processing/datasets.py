@@ -5,8 +5,10 @@ from dataset_processing.pratyushi.process_dataset import PratyushiDataset
 from dataset_processing.okemdad_ai.process_dataset import OkemdadDataset
 
 TRAIN_DATASETS = [
-    DAIGTDataset.get(),
-    OkemdadDataset.get(sample_n=9000)
+    DAIGTDataset.get_randomly_sampled(
+        human_sample_n=10000,
+        ai_sample_n=10000
+    )
 ]
 EVAL_DATASETS = [PratyushiDataset.get()]
 
@@ -15,7 +17,7 @@ def get_train_dataset() -> tuple[Series, Series]:
     """Load training dataset and return features (strings) and labels (ints) respectively."""
     X, y = __concatenate_dataset(TRAIN_DATASETS)
 
-    print(f"Train dataset composition: Y -> {y.value_counts()}")
+    __print_dataset_composition(X, y, "Test")
 
     return X, y
 
@@ -24,7 +26,7 @@ def get_eval_dataset() -> tuple[Series, Series]:
     """Load evaluation dataset and return features (strings) and labels (ints) respectively."""
     X, y = __concatenate_dataset(EVAL_DATASETS)
 
-    print(f"Eval dataset composition: Y -> {y.value_counts()}")
+    __print_dataset_composition(X, y, "Eval")
 
     return X, y
 
@@ -39,7 +41,11 @@ def __concatenate_dataset(
         X_list.append(dataset[0])
         y_list.append(dataset[1])
 
-    X = pandas.concat(X_list, axis=0, ignore_index=True)
-    y = pandas.concat(y_list, axis=0, ignore_index=True)
+    X = pandas.concat(X_list, axis=0)
+    y = pandas.concat(y_list, axis=0)
 
     return X, y
+
+def __print_dataset_composition(X: Series, y: Series, dataset_name: str):
+    print(f"{dataset_name} dataset composition: X.head(3) -> \n{X.head(3)}\n")
+    print(f"{dataset_name} dataset composition: Y -> \n{y.value_counts()}\n")
