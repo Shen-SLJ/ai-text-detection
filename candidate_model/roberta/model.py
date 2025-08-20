@@ -122,7 +122,7 @@ class CandidateRobertaModel:
         accuracy = self.accuracy_metric.compute(predictions=predictions, references=labels)
         recall = self.recall_metric.compute(predictions=predictions, references=labels)
 
-        tn, fp = confusion_matrix(labels, predictions).ravel()
+        tn, fp, _, _ = confusion_matrix(labels, predictions).ravel()
         fpr = get_false_positive_rate(fp, tn)
 
         return {
