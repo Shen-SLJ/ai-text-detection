@@ -3,35 +3,27 @@ from numpy import ndarray
 from typing import Union
 
 
-def print_accuracy(tp: int, tn: int, fp: int, fn: int) -> None:
-    accuracy = (tp + tn) / (tp + tn + fp + fn)
-
-    print("Accuracy: ", accuracy)
+def get_accuracy(tp: int, tn: int, fp: int, fn: int) -> float:
+    return (tp + tn) / (tp + tn + fp + fn)
 
 
-def print_recall(tp: int, fn: int) -> None:
-    recall = tp / (tp + fn)
-
-    print("Recall: ", recall)
+def get_recall(tp: int, fn: int) -> float:
+    return tp / (tp + fn)
 
 
-def print_false_positive_rate(fp: int, tn: int) -> None:
-    false_positive_rate = fp / (fp + tn)
-
-    print("False Positive Rate: ", false_positive_rate)
+def get_false_positive_rate(fp: int, tn: int) -> float:
+    return fp / (fp + tn)
 
 
-def print_false_negative_rate(fn: int, tp: int) -> None:
-    false_negative_rate = fn / (fn + tp)
-
-    print("False Negative Rate: ", false_negative_rate)
+def get_false_negative_rate(fn: int, tp: int) -> float:
+    return fn / (fn + tp)
 
 
-def print_important_metrics(tp: int, tn: int, fp: int, fn: int) -> None:
-    print_accuracy(tp, tn, fp, fn)
-    print_recall(tp, fn)
-    print_false_positive_rate(fp, tn)
-    print_false_negative_rate(fn, tp)
+def print_important_metrics(tp: int, tn: int, fp: int, fn: int) -> float:
+    print("Accuracy: ", get_accuracy(tp, tn, fp, fn))
+    print("Recall: ", get_recall(tp, fn))
+    print("False positive rate: ", get_false_positive_rate(fp, tn))
+    print("False negative rate: ", get_false_negative_rate(fn, tp))
 
 
 def get_confusion_matrix_as_tuple(

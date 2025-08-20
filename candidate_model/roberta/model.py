@@ -7,11 +7,15 @@ from transformers import (
     Trainer,
     DataCollatorWithPadding,
 )
+from transformers.trainer_utils import EvalPrediction
 from datasets import Dataset
-from torch import argmax, no_grad
+from torch import argmax, no_grad, Tensor
 from torch.nn.functional import softmax
 from torch.utils.data import DataLoader
 from utils.gpu_utils import is_gpu_available
+from utils.metric_utils import get_false_positive_rate
+from sklearn.metrics import confusion_matrix
+import evaluate
 
 
 class CandidateRobertaModel:
@@ -37,7 +41,12 @@ class CandidateRobertaModel:
         self.eval_documents = eval_documents
         self.eval_labels = eval_labels
 
-        print(f"len_train: {len(self.train_documents)}, len_eval: {len(self.eval_documents)}")
+        self.accuracy_metric = evaluate.load("accuracy")
+        self.recall_metric = evaluate.load("recall")
+
+        print(
+            f"len_train: {len(self.train_documents)}, len_eval: {len(self.eval_documents)}"
+        )
 
         self.tokenizer: RobertaTokenizer = RobertaTokenizer.from_pretrained(
             "roberta-base"
@@ -61,7 +70,7 @@ class CandidateRobertaModel:
         Train model and save checkpoint.
         """
         training_args = TrainingArguments(
-            output_dir=self.MODEL_SAVE_PATH, 
+            output_dir=self.MODEL_SAVE_PATH,
             use_cpu=self.use_cpu,
             eval_strategy="steps",
             eval_steps=100,
@@ -70,8 +79,8 @@ class CandidateRobertaModel:
             num_train_epochs=3,
             per_device_train_batch_size=16,
             per_device_eval_batch_size=16,
-            learning_rate=5e-5,
-            weight_decay=0
+            learning_rate=5e-6,
+            weight_decay=0,
         )
 
         train_dataset = self.__get_dataset(self.train_documents, self.train_labels)
@@ -83,6 +92,7 @@ class CandidateRobertaModel:
             train_dataset=train_dataset,
             eval_dataset=eval_dataset,
             processing_class=self.tokenizer,
+            compute_metrics=self.__compute_training_metrics,
         )
 
         trainer.train()
@@ -102,6 +112,24 @@ class CandidateRobertaModel:
         dataset = Dataset.from_dict(dataset_dict)
 
         return dataset
+
+    def __compute_training_metrics(
+        self, eval_preds: EvalPrediction
+    ) -> dict[str, float]:
+        logits, labels = eval_preds
+        predictions = self.__get_predictions_from_logits(logits_tensor=logits)
+
+        accuracy = self.accuracy_metric(predictions=predictions, references=labels)
+        recall = self.recall_metric(predictions=predictions, references=labels)
+
+        tn, fp = confusion_matrix(labels, predictions).ravel()
+        fpr = get_false_positive_rate(fp, tn)
+
+        return {
+            "accuracy": accuracy["accuracy"],
+            "recall": recall["recall"],
+            "fpr": fpr,
+        }
 
     def predict(self, documents: List[str]) -> List[int]:
         """Run prediction. Documents automatically batched."""
@@ -123,13 +151,18 @@ class CandidateRobertaModel:
 
         for batch in X_data_loader:
             batch = {k: v.to(self.device) for k, v in batch.items()}
-            
+
             with no_grad():
                 output = self.model(**batch)
 
-            predictions = softmax(output.logits, dim=-1)
-            predictions_list = argmax(predictions, dim=-1).tolist()
+            predictions_list = self.__get_predictions_from_logits(output.logits)
 
             all_predictions.extend(predictions_list)
 
         return all_predictions
+
+    def __get_predictions_from_logits(self, logits_tensor: Tensor) -> List[int]:
+        predictions = softmax(logits_tensor, dim=-1)
+        predictions_list = argmax(predictions, dim=-1).tolist()
+
+        return predictions_list
