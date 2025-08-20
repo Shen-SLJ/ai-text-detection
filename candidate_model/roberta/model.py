@@ -117,10 +117,12 @@ class CandidateRobertaModel:
             collate_fn=collator,
         )
 
+        self.model.eval()
+
         all_predictions = []
 
         for batch in X_data_loader:
-            batch = {k: v.to(self.device) for k, v in X.items()}
+            batch = {k: v.to(self.device) for k, v in batch.items()}
             
             with no_grad():
                 output = self.model(**batch)
