@@ -1,4 +1,4 @@
-from typing import List, Optional, Literal
+from typing import List, Optional, Literal, Union
 from utils.path_utils import abs_path_from_project_path
 from transformers import (
     RobertaForSequenceClassification,
@@ -119,8 +119,8 @@ class CandidateRobertaModel:
         logits, labels = eval_preds
         predictions = self.__get_predictions_from_logits(logits, logits_type="np")
 
-        accuracy = self.accuracy_metric(predictions=predictions, references=labels)
-        recall = self.recall_metric(predictions=predictions, references=labels)
+        accuracy = self.accuracy_metric.compute(predictions=predictions, references=labels)
+        recall = self.recall_metric.compute(predictions=predictions, references=labels)
 
         tn, fp = confusion_matrix(labels, predictions).ravel()
         fpr = get_false_positive_rate(fp, tn)
@@ -163,7 +163,7 @@ class CandidateRobertaModel:
         return all_predictions
 
     def __get_predictions_from_logits(
-        self, logits, logits_type: Literal["pt", "np"]
+        self, logits: Union[torch.Tensor, np.ndarray], logits_type: Literal["pt", "np"]
     ) -> List[int]:
         if logits_type == "pt":
             predictions_list = torch.argmax(logits, dim=-1).tolist()
