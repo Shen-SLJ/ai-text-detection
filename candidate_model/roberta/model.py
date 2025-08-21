@@ -98,12 +98,13 @@ class CandidateRobertaModel:
             eval_steps=100,
             logging_steps=100,
             save_steps=100,
-            num_train_epochs=3,
+            num_train_epochs=2,
             per_device_train_batch_size=8,
             per_device_eval_batch_size=8,
             gradient_accumulation_steps=8,
-            learning_rate=1e-5,
-            weight_decay=0.05,
+            learning_rate=5e-6,
+            warmup_ratio=0.1,
+            weight_decay=0.00,
         )
 
         train_dataset = self.__get_dataset(self.train_documents, self.train_labels)
