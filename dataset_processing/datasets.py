@@ -5,8 +5,8 @@ from dataset_processing.pratyushi.process_dataset import PratyushiDataset
 
 TRAIN_DATASETS = [
     HumanVsLLMDataset.get_randomly_sampled(
-        human_sample_n=10000,
-        ai_sample_n=10000
+        human_sample_n=20000,
+        ai_sample_n=20000
     )
 ]
 EVAL_DATASETS = [PratyushiDataset.get()]
