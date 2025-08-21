@@ -82,6 +82,8 @@ class CandidateRobertaModel:
         config.hidden_dropout_prob = 0.2
         config.attention_probs_dropout_prob = 0.2
 
+        return config
+
     def train(self) -> "CandidateRobertaModel":
         """
         Train model and save checkpoint.
