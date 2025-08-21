@@ -77,7 +77,7 @@ class CandidateRobertaModel:
             else "roberta-base"
         )
 
-    def __get_model_config() -> RobertaConfig:
+    def __get_model_config(self) -> RobertaConfig:
         config = RobertaConfig.from_pretrained("roberta-base")
         config.hidden_dropout_prob = 0.2
         config.attention_probs_dropout_prob = 0.2
