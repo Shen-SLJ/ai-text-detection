@@ -79,8 +79,8 @@ class CandidateRobertaModel:
 
     def __get_model_config(self) -> RobertaConfig:
         config = RobertaConfig.from_pretrained("roberta-base")
-        config.hidden_dropout_prob = 0.2
-        config.attention_probs_dropout_prob = 0.2
+        config.hidden_dropout_prob = 0.15
+        config.attention_probs_dropout_prob = 0.15
 
         return config
 
@@ -90,6 +90,8 @@ class CandidateRobertaModel:
         """
         training_args = TrainingArguments(
             output_dir=self.MODEL_SAVE_PATH,
+            load_best_model_at_end=True,
+            metric_for_best_model="eval_loss",
             save_total_limit=5,
             use_cpu=self.use_cpu,
             eval_strategy="steps",
@@ -100,7 +102,7 @@ class CandidateRobertaModel:
             per_device_train_batch_size=8,
             per_device_eval_batch_size=8,
             gradient_accumulation_steps=8,
-            learning_rate=3e-5,
+            learning_rate=1e-5,
             weight_decay=0.05,
         )
 
