@@ -3,6 +3,7 @@ from utils.path_utils import abs_path_from_project_path
 from transformers import (
     RobertaForSequenceClassification,
     RobertaTokenizer,
+    RobertaConfig,
     TrainingArguments,
     Trainer,
     DataCollatorWithPadding,
@@ -52,9 +53,10 @@ class CandidateRobertaModel:
             "roberta-base"
         )
         self.model = RobertaForSequenceClassification.from_pretrained(
-            f"{self.MODEL_SAVE_PATH}/checkpoint-{load_checkpoint_number}"
-            if load_checkpoint_number
-            else "roberta-base"
+            pretrained_model_name_or_path=self.__get_pretrained_model_name_or_path(
+                load_checkpoint_number
+            ),
+            config=self.__get_model_config(),
         )
 
         self.use_cpu = not is_gpu_available()
@@ -64,6 +66,21 @@ class CandidateRobertaModel:
     def __model_use_cuda_or_warn(self):
         if not self.use_cpu:
             self.model.to("cuda")
+
+    def __get_pretrained_model_name_or_path(
+        self,
+        load_checkpoint_number: Optional[int],
+    ) -> str:
+        return (
+            f"{self.MODEL_SAVE_PATH}/checkpoint-{load_checkpoint_number}"
+            if load_checkpoint_number
+            else "roberta-base"
+        )
+
+    def __get_model_config() -> RobertaConfig:
+        config = RobertaConfig.from_pretrained("roberta-base")
+        config.hidden_dropout_prob = 0.2
+        config.attention_probs_dropout_prob = 0.2
 
     def train(self) -> "CandidateRobertaModel":
         """
@@ -78,10 +95,11 @@ class CandidateRobertaModel:
             logging_steps=100,
             save_steps=250,
             num_train_epochs=3,
-            per_device_train_batch_size=16,
-            per_device_eval_batch_size=16,
-            learning_rate=5e-5,
-            weight_decay=0,
+            per_device_train_batch_size=8,
+            per_device_eval_batch_size=8,
+            gradient_accumulation_steps=8,
+            learning_rate=3e-5,
+            weight_decay=0.05,
         )
 
         train_dataset = self.__get_dataset(self.train_documents, self.train_labels)
@@ -120,7 +138,9 @@ class CandidateRobertaModel:
         logits, labels = eval_preds
         predictions = self.__get_predictions_from_logits(logits, logits_type="np")
 
-        accuracy = self.accuracy_metric.compute(predictions=predictions, references=labels)
+        accuracy = self.accuracy_metric.compute(
+            predictions=predictions, references=labels
+        )
         recall = self.recall_metric.compute(predictions=predictions, references=labels)
 
         tn, fp, _, _ = confusion_matrix(labels, predictions).ravel()
