@@ -4,7 +4,11 @@ from typing import Iterable
 from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.svm import LinearSVC
 from utils.pickle_utils import save_to_pickle
-from utils.math_utils import get_sentence_burstiness_score
+from utils.stylometric_utils import (
+    get_sentence_burstiness_score,
+    get_flesch_reading_ease_score,
+)
+from utils.matrix_manip_utils import combine_spmatrix_with_1d_nparrays
 from numpy import ndarray
 
 
@@ -20,7 +24,6 @@ class StylometricModel:
         self.ngram_vectorizer = HashingVectorizer(ngram_range=(3, 5))
         self.linear_svm = LinearSVC(max_iter=10000)
 
-
     def train(self) -> "StylometricModel":
         self.ngram_vectorizer.fit(self.train_documents)
 
@@ -29,12 +32,15 @@ class StylometricModel:
         self.linear_svm.fit(X_train, self.train_labels)
 
         return self
-    
+
     def __get_feature_representation(self, documents: Iterable[str]) -> ndarray:
         X = self.ngram_vectorizer.transform(documents)
 
-        burstiness_scores = [get_sentence_burstiness_score(document) for document in documents]
-        X = hstack([X, np.array(burstiness_scores).reshape(-1, 1)])
+        burstiness_scores = [
+            get_sentence_burstiness_score(document) for document in documents
+        ]
+
+        X = combine_spmatrix_with_1d_nparrays(X, [np.array(burstiness_scores)])
 
         return X
 
