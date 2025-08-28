@@ -1,4 +1,4 @@
-from candidate_model.stylometric_and_embeddings.model import StylometricWithEmbeddingModel
+from candidate_model.stylometric.model import StylometricModel
 from dataset_processing.datasets import get_eval_dataset
 from utils.metric_utils import print_important_metrics, get_confusion_matrix_as_tuple
 from utils.pickle_utils import load_from_pickle
@@ -7,7 +7,7 @@ from utils.pickle_utils import load_from_pickle
 X_eval, y_eval = get_eval_dataset()
 
 candidate_model = load_from_pickle(
-    StylometricWithEmbeddingModel.SAVED_MODEL_FILENAME, StylometricWithEmbeddingModel
+    StylometricModel.SAVED_MODEL_FILENAME, StylometricModel
 )
 
 prediction = candidate_model.predict(X_eval)
