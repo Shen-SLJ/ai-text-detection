@@ -1,3 +1,6 @@
+import nltk
+import numpy as np
+from scipy.sparse import hstack
 from typing import Iterable
 from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.svm import LinearSVC
@@ -18,15 +21,32 @@ class StylometricWithEmbeddingModel:
         self.ngram_vectorizer = HashingVectorizer(ngram_range=(3, 5))
         self.linear_svm = LinearSVC(max_iter=10000)
 
+        nltk.download('punkt_tab')
+
 
     def train(self) -> "StylometricWithEmbeddingModel":
         self.ngram_vectorizer.fit(self.train_documents)
 
         X_train = self.ngram_vectorizer.transform(self.train_documents)
 
+        burstiness_scores = [self.__get_sentence_burstiness_score(doc) for doc in self.train_documents]
+        X_train = hstack([X_train, np.array(burstiness_scores).reshape(-1, 1)])
+
         self.linear_svm.fit(X_train, self.train_labels)
 
         return self
+    
+    def __get_sentence_burstiness_score(self, document: str) -> float:
+        sentences = nltk.tokenize.sent_tokenize(document)
+
+        if len(sentences) == 0:
+            return 0.0
+        
+        sentence_lengths = [len(sentence.split()) for sentence in sentences]
+        std = np.std(sentence_lengths)
+        normalized_std = std / np.mean(sentence_lengths) if np.mean(sentence_lengths) > 0 else 0.0
+
+        return normalized_std 
 
     def save(self) -> "StylometricWithEmbeddingModel":
         save_to_pickle(self, self.SAVED_MODEL_FILENAME)
