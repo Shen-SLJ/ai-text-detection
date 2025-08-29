@@ -6,6 +6,7 @@ from sklearn.svm import LinearSVC
 from utils.pickle_utils import save_to_pickle
 from utils.stylometric_utils import (
     get_sentence_burstiness_score,
+    get_flesch_reading_ease_score,
 )
 from utils.matrix_manip_utils import combine_spmatrix_with_1d_nparrays
 from numpy import ndarray
@@ -13,7 +14,7 @@ from numpy import ndarray
 
 class StylometricModel:
     """A model combining stylometrics with an SVM to detect AI generated text.
-    
+
     Args:
         classifier: The classifier to use. Should be an sklearn compatible classifier.
     """
@@ -25,8 +26,8 @@ class StylometricModel:
         self.train_labels = train_labels
 
         self.ngram_vectorizer = HashingVectorizer(ngram_range=(3, 5))
-        #self.classifier = LinearSVC(max_iter=10000)
-        self.classifier = XGBClassifier(objective="binary:hinge", device="cpu")
+        self.classifier = LinearSVC(max_iter=10000)
+        # self.classifier = XGBClassifier(objective="binary:hinge", device="cuda")
 
     def train(self) -> "StylometricModel":
         self.ngram_vectorizer.fit(self.train_documents)
@@ -43,8 +44,13 @@ class StylometricModel:
         burstiness_scores = [
             get_sentence_burstiness_score(document) for document in documents
         ]
+        readibility_scores = [
+            get_flesch_reading_ease_score(document) for document in documents
+        ]
 
-        X = combine_spmatrix_with_1d_nparrays(X, [np.array(burstiness_scores)])
+        X = combine_spmatrix_with_1d_nparrays(
+            X, [np.array(burstiness_scores), np.array(readibility_scores)]
+        )
 
         return X
 
