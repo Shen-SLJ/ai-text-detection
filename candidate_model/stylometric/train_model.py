@@ -16,7 +16,7 @@ baseline_model = (
         train_documents=X_train,
         train_labels=y_train,
         use_character_ngram=True,
-        use_word_ngram=True,
+        use_word_ngram=True
     )
     .train()
     .save()
