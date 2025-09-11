@@ -21,4 +21,6 @@ def get_sentence_burstiness_score(document: str) -> float:
 
 
 def get_flesch_reading_ease_score(document: str) -> float:
+    """Calculate the Flesch Reading Ease score for a given document. Slow for long documents
+    """
     return textstat.flesch_reading_ease(document)

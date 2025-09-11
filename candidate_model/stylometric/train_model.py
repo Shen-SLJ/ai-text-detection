@@ -11,7 +11,16 @@ X_train, X_test, y_train, y_test = train_test_split(
     documents, labels, test_size=0.2, random_state=0
 )
 
-baseline_model = StylometricModel(X_train, y_train).train().save()
+baseline_model = (
+    StylometricModel(
+        train_documents=X_train,
+        train_labels=y_train,
+        use_character_ngram=True,
+        use_word_ngram=True,
+    )
+    .train()
+    .save()
+)
 
 prediction = baseline_model.predict(X_test)
 
@@ -19,4 +28,3 @@ tn, fp, fn, tp = get_confusion_matrix_as_tuple(y_test, prediction)
 
 print("Training evaluation results: ")
 print_important_metrics(tp, tn, fp, fn)
-

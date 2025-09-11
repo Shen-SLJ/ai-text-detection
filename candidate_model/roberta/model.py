@@ -95,16 +95,16 @@ class CandidateRobertaModel:
             save_total_limit=5,
             use_cpu=self.use_cpu,
             eval_strategy="steps",
-            eval_steps=100,
-            logging_steps=100,
-            save_steps=100,
-            num_train_epochs=2,
+            eval_steps=50,
+            logging_steps=50,
+            save_steps=50,
+            num_train_epochs=1,
             per_device_train_batch_size=8,
             per_device_eval_batch_size=8,
             gradient_accumulation_steps=8,
-            learning_rate=5e-6,
+            learning_rate=2e-5,
             warmup_ratio=0.1,
-            weight_decay=0.00,
+            weight_decay=0.01,
         )
 
         train_dataset = self.__get_dataset(self.train_documents, self.train_labels)
