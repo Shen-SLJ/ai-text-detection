@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Iterable
-from sklearn.feature_extraction.text import HashingVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import LinearSVC
 from utils.pickle_utils import save_to_pickle
 from utils.stylometric_utils import (
@@ -34,16 +34,17 @@ class StylometricModel:
         self.use_character_ngram = use_character_ngram
         self.use_word_ngram = use_word_ngram
 
-        self.ngram_vectorizer_word = HashingVectorizer(
-            analyzer="word", ngram_range=(1, 3)
+        self.ngram_vectorizer_word = TfidfVectorizer(
+            analyzer="word", ngram_range=(1, 3), min_df=5, max_df=0.8
         )
-        self.ngram_vectorizer_char = HashingVectorizer(
-            analyzer="char", ngram_range=(3, 5)
+        self.ngram_vectorizer_char = TfidfVectorizer(
+            analyzer="char", ngram_range=(3, 5), min_df=5, max_df=0.8
         )
         self.classifier = LinearSVC(max_iter=10000)
 
     def train(self) -> "StylometricModel":
         self.ngram_vectorizer_word.fit(self.train_documents)
+        self.ngram_vectorizer_char.fit(self.train_documents)
 
         X_train = self.__get_feature_representation(
             self.train_documents,
