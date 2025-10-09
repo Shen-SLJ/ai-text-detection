@@ -178,6 +178,7 @@ class StylometricModel:
                 documents=documents, metric_func=get_sentence_burstiness_score
             )
         )
+        burstiness_scores = self.burstiness_imputer.transform(burstiness_scores)
         burstiness_scores = self.burstiness_normalizer.transform(burstiness_scores)
 
         return burstiness_scores
