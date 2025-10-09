@@ -19,7 +19,7 @@ import numpy as np
 import torch
 
 
-class CandidateRobertaModel:
+class RobertaModel:
     """Text classification model using RoBERTa
 
     Args:
@@ -84,7 +84,7 @@ class CandidateRobertaModel:
 
         return config
 
-    def train(self) -> "CandidateRobertaModel":
+    def train(self) -> "RobertaModel":
         """
         Train model and save checkpoint.
         """

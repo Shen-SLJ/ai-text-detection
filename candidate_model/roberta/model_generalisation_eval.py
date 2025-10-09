@@ -1,4 +1,4 @@
-from candidate_model.roberta.model import CandidateRobertaModel
+from candidate_model.roberta.model import RobertaModel
 from dataset_processing.datasets import get_eval_dataset
 from utils.metric_utils import print_important_metrics, get_confusion_matrix_as_tuple
 
@@ -6,7 +6,7 @@ from utils.metric_utils import print_important_metrics, get_confusion_matrix_as_
 X_eval, y_eval = get_eval_dataset()
 X_eval = X_eval.tolist()
 
-roberta_model = CandidateRobertaModel(load_checkpoint_number=5250)
+roberta_model = RobertaModel(load_checkpoint_number=5250)
 
 prediction = roberta_model.predict(X_eval)
 

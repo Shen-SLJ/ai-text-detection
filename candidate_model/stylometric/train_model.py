@@ -1,4 +1,4 @@
-from candidate_model.stylometric.model import CandidateStylometricModel
+from candidate_model.stylometric.model import StylometricModel
 from dataset_processing.datasets import get_train_dataset
 from sklearn.model_selection import train_test_split
 from utils.metric_utils import print_important_metrics, get_confusion_matrix_as_tuple
@@ -12,7 +12,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 baseline_model = (
-    CandidateStylometricModel(
+    StylometricModel(
         train_documents=X_train,
         train_labels=y_train,
         use_character_ngram=True,

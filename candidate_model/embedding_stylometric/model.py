@@ -1,6 +1,6 @@
 from typing import Iterable
 from sklearn.svm import LinearSVC
-from candidate_model.stylometric.model import CandidateStylometricModel
+from candidate_model.stylometric.model import StylometricModel
 from utils.pickle_utils import save_to_pickle
 from utils.gpu_utils import is_gpu_available
 from utils.vector_manip_utils import combine_spmatrix_with_1d_nparrays
@@ -32,7 +32,7 @@ class EmbeddingStylometricModel:
         self.embedder = SentenceTransformer(
             "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
         ).to("cuda" if is_gpu_available() else "cpu")
-        self.stylometric_model = CandidateStylometricModel(
+        self.stylometric_model = StylometricModel(
             train_documents=train_documents,
             train_labels=train_labels,
             use_burstiness=use_burstiness,
@@ -66,7 +66,7 @@ class EmbeddingStylometricModel:
 
         return combined_features
 
-    def save(self) -> "CandidateStylometricModel":
+    def save(self) -> "StylometricModel":
         save_to_pickle(self, self.SAVED_MODEL_FILENAME)
 
         return self

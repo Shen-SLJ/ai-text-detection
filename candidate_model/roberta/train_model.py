@@ -1,4 +1,4 @@
-from candidate_model.roberta.model import CandidateRobertaModel
+from candidate_model.roberta.model import RobertaModel
 from dataset_processing.datasets import get_train_dataset
 from sklearn.model_selection import train_test_split
 from utils.metric_utils import print_important_metrics, get_confusion_matrix_as_tuple
@@ -14,7 +14,7 @@ X_eval, X_test, y_eval, y_test = train_test_split(
     X_temp, y_temp, test_size=0.5, random_state=0
 )
 
-candidate_model = CandidateRobertaModel(X_train, y_train, X_eval, y_eval).train()
+candidate_model = RobertaModel(X_train, y_train, X_eval, y_eval).train()
 
 prediction = candidate_model.predict(X_test)
 

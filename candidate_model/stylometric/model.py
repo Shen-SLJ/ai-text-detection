@@ -14,7 +14,7 @@ from numpy import ndarray
 from scipy.sparse import spmatrix
 
 
-class CandidateStylometricModel:
+class StylometricModel:
     """A model combining stylometrics with a Linear SVM to detect AI generated text."""
 
     SAVED_MODEL_FILENAME = "candidate_stylometric.pkl"
@@ -56,7 +56,7 @@ class CandidateStylometricModel:
         )
         self.classifier = LinearSVC(max_iter=10000)
 
-    def train(self) -> "CandidateStylometricModel":
+    def train(self) -> "StylometricModel":
         if self.use_word_ngram:
             self.__fit_word_n_gram_vectorizer()
         if self.use_character_ngram:
@@ -131,7 +131,7 @@ class CandidateStylometricModel:
 
         return X
 
-    def save(self) -> "CandidateStylometricModel":
+    def save(self) -> "StylometricModel":
         save_to_pickle(self, self.SAVED_MODEL_FILENAME)
 
         print(f"Stylometric with embedding model saved to {self.SAVED_MODEL_FILENAME}")
