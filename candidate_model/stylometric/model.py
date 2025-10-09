@@ -106,7 +106,7 @@ class StylometricModel:
         self.training_readibility_scores_cache = readibility_scores
 
     def get_feature_representation(self, documents: Iterable[str]) -> spmatrix:
-        return self.get_feature_representation(
+        return self.__get_feature_representation(
             documents=documents, use_training_cache=False
         )
 

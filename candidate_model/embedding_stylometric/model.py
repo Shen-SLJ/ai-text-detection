@@ -11,7 +11,7 @@ from scipy.sparse import spmatrix
 
 
 class EmbeddingStylometricModel:
-    """A model combining stylometrics SVM with sentence-embeddings with SVM to detect AI generated text.
+    """A model combining stylometrics Linear SVM with sentence-embeddings with platt-scaled linear SVM to detect AI generated text.
 
     Sentence embedder: sentence-transformers/paraphrase-multilingual-mpnet-base-v2
     """
