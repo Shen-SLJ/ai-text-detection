@@ -39,6 +39,8 @@ class StylometricModel:
         self.use_word_ngram = use_word_ngram
         self.burstiness_normalizer = StandardScaler()
         self.readibility_normalizer = StandardScaler()
+        self.training_burstiness_scores_cache = None
+        self.training_readibility_scores_cache = None
 
         self.ngram_vectorizer_word = TfidfVectorizer(
             analyzer="word",
@@ -66,7 +68,9 @@ class StylometricModel:
         if self.use_readibility_score:
             self.__fit_readibility_normalizer()
 
-        X_train = self.get_feature_representation(self.train_documents)
+        X_train = self.get_feature_representation(
+            self.train_documents, use_training_cache=True
+        )
 
         self.classifier.fit(X_train, self.train_labels)
 
@@ -84,14 +88,24 @@ class StylometricModel:
         )
         self.burstiness_normalizer.fit(burstiness_scores)
 
+        self.training_burstiness_scores_cache = burstiness_scores
+
     def __fit_readibility_normalizer(self):
         readibility_scores = get_document_metrics_as_feature(
             self.train_documents, get_flesch_reading_ease_score
         )
         self.readibility_normalizer.fit(readibility_scores)
 
-    def get_feature_representation(self, documents: Iterable[str]) -> spmatrix:
-        """Get stylometric features. Ngrams are l2 normalised, others are z-normalised."""
+        self.training_readibility_scores_cache = readibility_scores
+
+    def get_feature_representation(
+        self, documents: Iterable[str], use_training_cache: bool = False
+    ) -> spmatrix:
+        """Get stylometric features. Ngrams are l2 normalised, others are z-normalised.
+
+        Args:
+            use_training_cache: If true, use cached training scores for burstiness and readibility if they exist. Default false.
+        """
         X = None
 
         if self.use_character_ngram or self.use_word_ngram:
@@ -109,19 +123,15 @@ class StylometricModel:
             X = combine_spmatrix(X_word, X_char)
 
         if self.use_burstiness:
-            burstiness_scores = self.burstiness_normalizer.transform(
-                get_document_metrics_as_feature(
-                    documents, get_sentence_burstiness_score
-                )
+            burstiness_scores = self.__get_z_normalised_burstiness_scores(
+                documents=documents, use_training_cache=use_training_cache
             )
 
             X = combine_spmatrix_with_1d_nparrays(X, [burstiness_scores])
 
         if self.use_readibility_score:
-            readibility_scores = self.readibility_normalizer.transform(
-                get_document_metrics_as_feature(
-                    documents, get_flesch_reading_ease_score
-                )
+            readibility_scores = self.__get_z_normalised_readibility_scores(
+                documents=documents, use_training_cache=use_training_cache
             )
 
             X = combine_spmatrix_with_1d_nparrays(X, [readibility_scores])
@@ -130,6 +140,34 @@ class StylometricModel:
             raise ValueError("At least one feature type must be selected.")
 
         return X
+
+    def __get_z_normalised_readibility_scores(
+        self, documents: Iterable[str], use_training_cache: bool = False
+    ) -> ndarray:
+        readibility_scores = (
+            self.training_readibility_scores_cache
+            if use_training_cache and self.training_readibility_scores_cache is not None
+            else get_document_metrics_as_feature(
+                documents=documents, metric_func=get_flesch_reading_ease_score
+            )
+        )
+        readibility_scores = self.readibility_normalizer.transform(readibility_scores)
+
+        return readibility_scores
+
+    def __get_z_normalised_burstiness_scores(
+        self, documents: Iterable[str], use_training_cache: bool = False
+    ) -> ndarray:
+        burstiness_scores = (
+            self.training_burstiness_scores_cache
+            if use_training_cache and self.training_burstiness_scores_cache is not None
+            else get_document_metrics_as_feature(
+                documents=documents, metric_func=get_sentence_burstiness_score
+            )
+        )
+        burstiness_scores = self.burstiness_normalizer.transform(burstiness_scores)
+
+        return burstiness_scores
 
     def save(self) -> "StylometricModel":
         save_to_pickle(self, self.SAVED_MODEL_FILENAME)

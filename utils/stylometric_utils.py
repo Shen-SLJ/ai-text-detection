@@ -1,6 +1,6 @@
 import nltk
 import numpy as np
-from readability import Readability
+from textatistic import Textatistic
 from typing import Callable
 
 nltk.download("punkt_tab")
@@ -21,19 +21,34 @@ def get_sentence_burstiness_score(document: str) -> float:
     return normalized_std
 
 
-def get_flesch_reading_ease_score(document: str) -> float:
-    """Calculate the Flesch Reading Ease score for a given document.
-    """
-    r = Readability(document)
+def get_flesch_reading_ease_score(
+    document: str, should_log_exceptions: bool = False
+) -> float:
+    """Calculate the Flesch Reading Ease score for a given document."""
+    try:
+        text_metrics = Textatistic(text=document)
+        return text_metrics.flesch_score
+    except Exception as e:
+        if should_log_exceptions:
+            print(
+                f"Error calculating Flesch Reading Ease score: {e}. Document={document}"
+            )
+        return 0.0
 
-    return r.flesch()
 
-def get_document_metrics_as_feature(documents: list[str], metric_func: Callable[[str], int]) -> np.ndarray:
+def get_document_metrics_as_feature(
+    documents: list[str], metric_func: Callable[[str], int]
+) -> np.ndarray:
     """Returns (N, 1) shaped array of the metric for each document."""
     metrics = []
 
     for i, doc in enumerate(documents):
-        print(f"Processing document {i+1}/{len(documents)}", end="\r")
+        print(
+            f"Processing document {i+1}/{len(documents)}, metric_func={metric_func.__name__}",
+            end="\r",
+        )
         metrics.append(metric_func(doc))
+
+    print("")
 
     return np.array(metrics).reshape(-1, 1)
