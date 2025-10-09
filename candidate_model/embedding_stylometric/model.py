@@ -66,7 +66,7 @@ class EmbeddingStylometricModel:
 
         return combined_features
 
-    def save(self) -> "StylometricModel":
+    def save(self) -> "EmbeddingStylometricModel":
         save_to_pickle(self, self.SAVED_MODEL_FILENAME)
 
         return self

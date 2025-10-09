@@ -91,7 +91,7 @@ class StylometricModel:
         self.readibility_normalizer.fit(readibility_scores)
 
     def get_feature_representation(self, documents: Iterable[str]) -> spmatrix:
-        """Get stylometric features. Features are l2 normalised."""
+        """Get stylometric features. Ngrams are l2 normalised, others are z-normalised."""
         X = None
 
         if self.use_character_ngram or self.use_word_ngram:

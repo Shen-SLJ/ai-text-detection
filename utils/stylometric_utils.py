@@ -26,8 +26,14 @@ def get_flesch_reading_ease_score(document: str) -> float:
     """
     r = Readability(document)
 
-    return r.flesch_reading_ease()
+    return r.flesch()
 
-def get_document_metrics_as_feature(document: str, metric_func: Callable[[str], int]) -> np.ndarray:
-    """Returns (N, 1) np array of the metric for each document."""
-    return np.array([metric_func(document)]).reshape(-1, 1)
+def get_document_metrics_as_feature(documents: list[str], metric_func: Callable[[str], int]) -> np.ndarray:
+    """Returns (N, 1) shaped array of the metric for each document."""
+    metrics = []
+
+    for i, doc in enumerate(documents):
+        print(f"Processing document {i+1}/{len(documents)}", end="\r")
+        metrics.append(metric_func(doc))
+
+    return np.array(metrics).reshape(-1, 1)
