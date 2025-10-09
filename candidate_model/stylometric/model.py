@@ -2,6 +2,7 @@ import numpy as np
 from typing import Iterable
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import LinearSVC
+from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 from utils.pickle_utils import save_to_pickle
 from utils.stylometric_utils import (
@@ -39,6 +40,8 @@ class StylometricModel:
         self.use_word_ngram = use_word_ngram
         self.burstiness_normalizer = StandardScaler()
         self.readibility_normalizer = StandardScaler()
+        self.burstiness_imputer = SimpleImputer(missing_values=np.nan, strategy="mean")
+        self.readibility_imputer = SimpleImputer(missing_values=np.nan, strategy="mean")
         self.training_burstiness_scores_cache = None
         self.training_readibility_scores_cache = None
 
@@ -86,6 +89,8 @@ class StylometricModel:
         burstiness_scores = get_document_metrics_as_feature(
             self.train_documents, get_sentence_burstiness_score
         )
+
+        burstiness_scores = self.burstiness_imputer.fit_transform(burstiness_scores)
         self.burstiness_normalizer.fit(burstiness_scores)
 
         self.training_burstiness_scores_cache = burstiness_scores
@@ -94,6 +99,8 @@ class StylometricModel:
         readibility_scores = get_document_metrics_as_feature(
             self.train_documents, get_flesch_reading_ease_score
         )
+
+        readibility_scores = self.readibility_imputer.fit_transform(readibility_scores)
         self.readibility_normalizer.fit(readibility_scores)
 
         self.training_readibility_scores_cache = readibility_scores
@@ -151,6 +158,7 @@ class StylometricModel:
                 documents=documents, metric_func=get_flesch_reading_ease_score
             )
         )
+        readibility_scores = self.readibility_imputer.transform(readibility_scores)
         readibility_scores = self.readibility_normalizer.transform(readibility_scores)
 
         return readibility_scores

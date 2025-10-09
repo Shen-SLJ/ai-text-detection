@@ -1,21 +1,22 @@
 import nltk
 import numpy as np
 from textatistic import Textatistic
-from typing import Callable
+from typing import Callable, Union
 
 nltk.download("punkt_tab")
 
 
 def get_sentence_burstiness_score(document: str) -> float:
+    """Calculate the burstiness score for a given document. Returns np.nan if calculation fails or value is invalid."""
     sentences = nltk.tokenize.sent_tokenize(document)
 
     if len(sentences) == 0:
-        return 0.0
+        return np.nan
 
     sentence_lengths = [len(sentence.split()) for sentence in sentences]
     std = np.std(sentence_lengths)
     normalized_std = (
-        std / np.mean(sentence_lengths) if np.mean(sentence_lengths) > 0 else 0.0
+        std / np.mean(sentence_lengths) if np.mean(sentence_lengths) > 0 else np.nan
     )
 
     return normalized_std
@@ -24,7 +25,7 @@ def get_sentence_burstiness_score(document: str) -> float:
 def get_flesch_reading_ease_score(
     document: str, should_log_exceptions: bool = False
 ) -> float:
-    """Calculate the Flesch Reading Ease score for a given document."""
+    """Calculate the Flesch Reading Ease score for a given document. Returns np.nan if calculation fails."""
     try:
         text_metrics = Textatistic(text=document)
         return text_metrics.flesch_score
@@ -33,7 +34,7 @@ def get_flesch_reading_ease_score(
             print(
                 f"Error calculating Flesch Reading Ease score: {e}. Document={document}"
             )
-        return 0.0
+        return np.nan
 
 
 def get_document_metrics_as_feature(
