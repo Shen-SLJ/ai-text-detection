@@ -1,5 +1,6 @@
 from typing import Iterable
 from sklearn.svm import LinearSVC
+from sklearn.calibration import CalibratedClassifierCV
 from candidate_model.stylometric.model import StylometricModel
 from utils.pickle_utils import save_to_pickle
 from utils.gpu_utils import is_gpu_available
@@ -40,7 +41,9 @@ class EmbeddingStylometricModel:
             use_character_ngram=use_character_ngram,
             use_word_ngram=use_word_ngram,
         )
-        self.classifier = LinearSVC(max_iter=10000)
+        self.classifier = CalibratedClassifierCV(
+            estimator=LinearSVC(max_iter=10000), method="sigmoid"
+        )
 
     def train(self) -> "EmbeddingStylometricModel":
         self.stylometric_model.train()
@@ -76,5 +79,7 @@ class EmbeddingStylometricModel:
 
         return self.classifier.predict(features)
 
+    def predict_probability(self, documents: Iterable[str]) -> ndarray:
+        features = self.__get_feature_representation(documents)
 
-EmbeddingStylometricModel(train_documents=[], train_labels=[])
+        return self.classifier.predict_proba(features)

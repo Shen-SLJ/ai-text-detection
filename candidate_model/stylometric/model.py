@@ -71,7 +71,7 @@ class StylometricModel:
         if self.use_readibility_score:
             self.__fit_readibility_normalizer()
 
-        X_train = self.get_feature_representation(
+        X_train = self.__get_feature_representation(
             self.train_documents, use_training_cache=True
         )
 
@@ -105,7 +105,12 @@ class StylometricModel:
 
         self.training_readibility_scores_cache = readibility_scores
 
-    def get_feature_representation(
+    def get_feature_representation(self, documents: Iterable[str]) -> spmatrix:
+        return self.get_feature_representation(
+            documents=documents, use_training_cache=False
+        )
+
+    def __get_feature_representation(
         self, documents: Iterable[str], use_training_cache: bool = False
     ) -> spmatrix:
         """Get stylometric features. Ngrams are l2 normalised, others are z-normalised.
@@ -185,7 +190,7 @@ class StylometricModel:
         return self
 
     def predict(self, documents: Iterable[str]) -> ndarray:
-        X = self.get_feature_representation(documents=documents)
+        X = self.__get_feature_representation(documents=documents)
 
         prediction = self.classifier.predict(X)
 
