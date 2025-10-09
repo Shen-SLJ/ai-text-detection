@@ -1,5 +1,5 @@
 import numpy as np
-from typing import List, Optional
+from typing import List, Optional, Callable
 from scipy.sparse import hstack, spmatrix
 
 
@@ -12,7 +12,7 @@ def combine_spmatrix_with_1d_nparrays(
     combined = sparse_matrix
 
     for nparray in nparrays:
-        combined = hstack([sparse_matrix, nparray.reshape(-1, 1)])
+        combined = hstack([combined, nparray.reshape(-1, 1)])
 
     return combined
 

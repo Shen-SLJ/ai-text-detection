@@ -1,13 +1,15 @@
 import numpy as np
 from typing import Iterable
-from sklearn.feature_extraction.text import TfidfVectorizer, HashingVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import LinearSVC
+from sklearn.preprocessing import StandardScaler
 from utils.pickle_utils import save_to_pickle
 from utils.stylometric_utils import (
     get_sentence_burstiness_score,
     get_flesch_reading_ease_score,
 )
-from utils.matrix_manip_utils import combine_spmatrix, combine_spmatrix_with_1d_nparrays
+from utils.vector_manip_utils import combine_spmatrix, combine_spmatrix_with_1d_nparrays
+from utils.stylometric_utils import get_document_metrics_as_feature
 from numpy import ndarray
 from scipy.sparse import spmatrix
 
@@ -35,6 +37,8 @@ class CandidateStylometricModel:
         self.use_readibility_score = use_readibility_score
         self.use_character_ngram = use_character_ngram
         self.use_word_ngram = use_word_ngram
+        self.burstiness_normalizer = StandardScaler()
+        self.readibility_normalizer = StandardScaler()
 
         self.ngram_vectorizer_word = TfidfVectorizer(
             analyzer="word",
@@ -54,9 +58,13 @@ class CandidateStylometricModel:
 
     def train(self) -> "CandidateStylometricModel":
         if self.use_word_ngram:
-            self.ngram_vectorizer_word.fit(self.train_documents)
+            self.__fit_word_n_gram_vectorizer()
         if self.use_character_ngram:
-            self.ngram_vectorizer_char.fit(self.train_documents)
+            self.__fit_char_n_gram_vectorizer()
+        if self.use_burstiness:
+            self.__fit_burstiness_normalizer()
+        if self.use_readibility_score:
+            self.__fit_readibility_normalizer()
 
         X_train = self.get_feature_representation(self.train_documents)
 
@@ -64,9 +72,26 @@ class CandidateStylometricModel:
 
         return self
 
+    def __fit_word_n_gram_vectorizer(self):
+        self.ngram_vectorizer_word.fit(self.train_documents)
+
+    def __fit_char_n_gram_vectorizer(self):
+        self.ngram_vectorizer_char.fit(self.train_documents)
+
+    def __fit_burstiness_normalizer(self):
+        burstiness_scores = get_document_metrics_as_feature(
+            self.train_documents, get_sentence_burstiness_score
+        )
+        self.burstiness_normalizer.fit(burstiness_scores)
+
+    def __fit_readibility_normalizer(self):
+        readibility_scores = get_document_metrics_as_feature(
+            self.train_documents, get_flesch_reading_ease_score
+        )
+        self.readibility_normalizer.fit(readibility_scores)
+
     def get_feature_representation(self, documents: Iterable[str]) -> spmatrix:
-        """Get stylometric features. Features are l2 normalised.
-        """
+        """Get stylometric features. Features are l2 normalised."""
         X = None
 
         if self.use_character_ngram or self.use_word_ngram:
@@ -83,20 +108,23 @@ class CandidateStylometricModel:
 
             X = combine_spmatrix(X_word, X_char)
 
-        # Mistake: Should normalize burstiness scores and readibility scores using z-score
         if self.use_burstiness:
-            burstiness_scores = [
-                get_sentence_burstiness_score(document) for document in documents
-            ]
+            burstiness_scores = self.burstiness_normalizer.transform(
+                get_document_metrics_as_feature(
+                    documents, get_sentence_burstiness_score
+                )
+            )
 
-            X = combine_spmatrix_with_1d_nparrays(X, [np.array(burstiness_scores)])
+            X = combine_spmatrix_with_1d_nparrays(X, [burstiness_scores])
 
         if self.use_readibility_score:
-            readibility_scores = [
-                get_flesch_reading_ease_score(document) for document in documents
-            ]
+            readibility_scores = self.readibility_normalizer.transform(
+                get_document_metrics_as_feature(
+                    documents, get_flesch_reading_ease_score
+                )
+            )
 
-            X = combine_spmatrix_with_1d_nparrays(X, [np.array(readibility_scores)])
+            X = combine_spmatrix_with_1d_nparrays(X, [readibility_scores])
 
         if X is None:
             raise ValueError("At least one feature type must be selected.")

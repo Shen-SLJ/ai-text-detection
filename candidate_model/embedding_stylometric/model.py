@@ -3,7 +3,7 @@ from sklearn.svm import LinearSVC
 from candidate_model.stylometric.model import CandidateStylometricModel
 from utils.pickle_utils import save_to_pickle
 from utils.gpu_utils import is_gpu_available
-from utils.matrix_manip_utils import combine_spmatrix_with_1d_nparrays
+from utils.vector_manip_utils import combine_spmatrix_with_1d_nparrays
 from numpy import ndarray
 from sentence_transformers import SentenceTransformer
 from scipy.sparse import spmatrix

@@ -1,6 +1,7 @@
 import nltk
 import numpy as np
-import textstat
+from readability import Readability
+from typing import Callable
 
 nltk.download("punkt_tab")
 
@@ -21,6 +22,12 @@ def get_sentence_burstiness_score(document: str) -> float:
 
 
 def get_flesch_reading_ease_score(document: str) -> float:
-    """Calculate the Flesch Reading Ease score for a given document. Slow for long documents
+    """Calculate the Flesch Reading Ease score for a given document.
     """
-    return textstat.flesch_reading_ease(document)
+    r = Readability(document)
+
+    return r.flesch_reading_ease()
+
+def get_document_metrics_as_feature(document: str, metric_func: Callable[[str], int]) -> np.ndarray:
+    """Returns (N, 1) np array of the metric for each document."""
+    return np.array([metric_func(document)]).reshape(-1, 1)
