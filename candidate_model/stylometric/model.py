@@ -48,15 +48,15 @@ class StylometricModel:
         self.ngram_vectorizer_word = TfidfVectorizer(
             analyzer="word",
             ngram_range=(1, 3),
-            min_df=0.001,
-            max_df=0.8,
+            min_df=5,
+            max_df=0.9,
             max_features=self.MAX_VOCAB_SIZE_WORD_NGRAM,
         )
         self.ngram_vectorizer_char = TfidfVectorizer(
             analyzer="char",
             ngram_range=(3, 5),
-            min_df=0.001,
-            max_df=0.8,
+            min_df=5,
+            max_df=0.9,
             max_features=self.MAX_VOCAB_SIZE_CHAR_NGRAM,
         )
         self.classifier = LinearSVC(max_iter=10000)
@@ -71,7 +71,7 @@ class StylometricModel:
         if self.use_readibility_score:
             self.__fit_readibility_normalizer()
 
-        X_train = self.__get_feature_representation(
+        X_train = self.get_feature_representation(
             self.train_documents, use_training_cache=True
         )
 
@@ -111,12 +111,7 @@ class StylometricModel:
 
         self.training_readibility_scores_cache = readibility_scores
 
-    def get_feature_representation(self, documents: Iterable[str]) -> spmatrix:
-        return self.__get_feature_representation(
-            documents=documents, use_training_cache=False
-        )
-
-    def __get_feature_representation(
+    def get_feature_representation(
         self, documents: Iterable[str], use_training_cache: bool = False
     ) -> spmatrix:
         """Get stylometric features. Ngrams are l2 normalised, others are z-normalised.
@@ -197,7 +192,7 @@ class StylometricModel:
         return self
 
     def predict(self, documents: Iterable[str]) -> ndarray:
-        X = self.__get_feature_representation(documents=documents)
+        X = self.get_feature_representation(documents=documents)
 
         prediction = self.classifier.predict(X)
 

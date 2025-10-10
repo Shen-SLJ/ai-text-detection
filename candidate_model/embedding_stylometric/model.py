@@ -48,12 +48,16 @@ class EmbeddingStylometricModel:
     def train(self) -> "EmbeddingStylometricModel":
         self.stylometric_model.train()
 
-        features = self.__get_feature_representation(self.train_documents)
+        features = self.__get_feature_representation(
+            documents=self.train_documents, use_stylometric_training_cache=True
+        )
         self.classifier.fit(features, self.train_labels)
 
         return self
 
-    def __get_feature_representation(self, documents: Iterable[str]) -> spmatrix:
+    def __get_feature_representation(
+        self, documents: Iterable[str], use_stylometric_training_cache: bool = False
+    ) -> spmatrix:
         embeddings: ndarray = self.embedder.encode(
             sentences=documents,
             convert_to_numpy=True,
@@ -61,7 +65,7 @@ class EmbeddingStylometricModel:
             normalize_embeddings=True,
         )
         stylometric_features = self.stylometric_model.get_feature_representation(
-            documents=documents
+            documents=documents, use_training_cache=use_stylometric_training_cache
         )
 
         combined_features = combine_spmatrix_with_nparrays(
