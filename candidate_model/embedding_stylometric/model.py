@@ -65,7 +65,7 @@ class EmbeddingStylometricModel:
             normalize_embeddings=True,
         )
         stylometric_features = self.stylometric_model.get_feature_representation(
-            documents=documents, use_training_cache=use_stylometric_training_cache
+            documents=documents, use_training_values=use_stylometric_training_cache
         )
 
         combined_features = combine_spmatrix_with_nparrays(

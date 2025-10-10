@@ -19,8 +19,8 @@ class StylometricModel:
     """A model combining stylometrics with a Linear SVM to detect AI generated text."""
 
     SAVED_MODEL_FILENAME = "candidate_stylometric.pkl"
-    MAX_VOCAB_SIZE_WORD_NGRAM = 150000
-    MAX_VOCAB_SIZE_CHAR_NGRAM = 250000
+    MAX_VOCAB_SIZE_WORD_NGRAM = None
+    MAX_VOCAB_SIZE_CHAR_NGRAM = None
 
     def __init__(
         self,
@@ -44,6 +44,8 @@ class StylometricModel:
         self.readibility_imputer = SimpleImputer(missing_values=np.nan, strategy="mean")
         self.training_burstiness_scores_cache = None
         self.training_readibility_scores_cache = None
+        self.training_char_ngram_cache = None
+        self.training_word_ngram_cache = None
 
         self.ngram_vectorizer_word = TfidfVectorizer(
             analyzer="word",
@@ -70,14 +72,28 @@ class StylometricModel:
             self.__fit_burstiness_normalizer()
         if self.use_readibility_score:
             self.__fit_readibility_normalizer()
+        if self.use_character_ngram:
+            self.__cache_training_character_ngram_features()
+        if self.use_word_ngram:
+            self.__cache_training_word_ngram_features()
 
         X_train = self.get_feature_representation(
-            self.train_documents, use_training_cache=True
+            self.train_documents, use_training_values=True
         )
 
         self.classifier.fit(X_train, self.train_labels)
 
         return self
+
+    def __cache_training_character_ngram_features(self):
+        self.training_char_ngram_cache = self.ngram_vectorizer_char.transform(
+            self.train_documents
+        )
+
+    def __cache_training_word_ngram_features(self):
+        self.training_word_ngram_cache = self.ngram_vectorizer_word.transform(
+            self.train_documents
+        )
 
     def __fit_word_n_gram_vectorizer(self):
         self.ngram_vectorizer_word.fit(self.train_documents)
@@ -112,39 +128,43 @@ class StylometricModel:
         self.training_readibility_scores_cache = readibility_scores
 
     def get_feature_representation(
-        self, documents: Iterable[str], use_training_cache: bool = False
+        self, documents: Iterable[str], use_training_values: bool = False
     ) -> spmatrix:
         """Get stylometric features. Ngrams are l2 normalised, others are z-normalised.
 
         Args:
-            use_training_cache: If true, use cached training scores for burstiness and readibility if they exist. Default false.
+            use_training_values: If true, will return cached training values if they exist, otherwise calculates them. Default false.
         """
         X = None
 
-        if self.use_character_ngram or self.use_word_ngram:
-            X_word = (
-                self.ngram_vectorizer_word.transform(documents)
-                if self.use_word_ngram
-                else None
-            )
+        if self.use_character_ngram:
             X_char = (
                 self.ngram_vectorizer_char.transform(documents)
-                if self.use_character_ngram
-                else None
+                if use_training_values and self.training_char_ngram_cache is None
+                else self.training_char_ngram_cache
             )
 
-            X = combine_spmatrix(X_word, X_char)
+            X = combine_spmatrix(X, X_char)
+
+        if self.use_word_ngram:
+            X_word = (
+                self.ngram_vectorizer_word.transform(documents)
+                if use_training_values and self.training_word_ngram_cache is None
+                else self.training_word_ngram_cache
+            )
+
+            X = combine_spmatrix(X, X_word)
 
         if self.use_burstiness:
             burstiness_scores = self.__get_z_normalised_burstiness_scores(
-                documents=documents, use_training_cache=use_training_cache
+                documents=documents, use_training_values=use_training_values
             )
 
             X = combine_spmatrix_with_nparrays(X, [burstiness_scores])
 
         if self.use_readibility_score:
             readibility_scores = self.__get_z_normalised_readibility_scores(
-                documents=documents, use_training_cache=use_training_cache
+                documents=documents, use_training_values=use_training_values
             )
 
             X = combine_spmatrix_with_nparrays(X, [readibility_scores])
@@ -155,11 +175,11 @@ class StylometricModel:
         return X
 
     def __get_z_normalised_readibility_scores(
-        self, documents: Iterable[str], use_training_cache: bool = False
+        self, documents: Iterable[str], use_training_values: bool = False
     ) -> ndarray:
         readibility_scores = (
             self.training_readibility_scores_cache
-            if use_training_cache and self.training_readibility_scores_cache is not None
+            if use_training_values and self.training_readibility_scores_cache is not None
             else get_document_metrics_as_feature(
                 documents=documents, metric_func=get_flesch_reading_ease_score
             )
@@ -170,11 +190,11 @@ class StylometricModel:
         return readibility_scores
 
     def __get_z_normalised_burstiness_scores(
-        self, documents: Iterable[str], use_training_cache: bool = False
+        self, documents: Iterable[str], use_training_values: bool = False
     ) -> ndarray:
         burstiness_scores = (
             self.training_burstiness_scores_cache
-            if use_training_cache and self.training_burstiness_scores_cache is not None
+            if use_training_values and self.training_burstiness_scores_cache is not None
             else get_document_metrics_as_feature(
                 documents=documents, metric_func=get_sentence_burstiness_score
             )
