@@ -19,7 +19,7 @@ class StylometricModel:
     """A model combining stylometrics with a Linear SVM to detect AI generated text."""
 
     SAVED_MODEL_FILENAME = "candidate_stylometric.pkl"
-    MAX_VOCAB_SIZE_WORD_NGRAM = 20000
+    MAX_VOCAB_SIZE_WORD_NGRAM = 40000
     MAX_VOCAB_SIZE_CHAR_NGRAM = 75000
 
     def __init__(
@@ -81,9 +81,15 @@ class StylometricModel:
 
     def __fit_word_n_gram_vectorizer(self):
         self.ngram_vectorizer_word.fit(self.train_documents)
+        print(
+            f"Fitted word n-gram vectorizer with vocab size {len(self.ngram_vectorizer_word.vocabulary_)}"
+        )
 
     def __fit_char_n_gram_vectorizer(self):
         self.ngram_vectorizer_char.fit(self.train_documents)
+        print(
+            f"Fitted character n-gram vectorizer with vocab size {len(self.ngram_vectorizer_char.vocabulary_)}"
+        )
 
     def __fit_burstiness_normalizer(self):
         burstiness_scores = get_document_metrics_as_feature(
