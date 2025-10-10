@@ -19,8 +19,8 @@ class StylometricModel:
     """A model combining stylometrics with a Linear SVM to detect AI generated text."""
 
     SAVED_MODEL_FILENAME = "candidate_stylometric.pkl"
-    MAX_VOCAB_SIZE_WORD_NGRAM = 40000
-    MAX_VOCAB_SIZE_CHAR_NGRAM = 75000
+    MAX_VOCAB_SIZE_WORD_NGRAM = 150000
+    MAX_VOCAB_SIZE_CHAR_NGRAM = 250000
 
     def __init__(
         self,
