@@ -139,18 +139,18 @@ class StylometricModel:
 
         if self.use_character_ngram:
             X_char = (
-                self.ngram_vectorizer_char.transform(documents)
-                if use_training_values and self.training_char_ngram_cache is None
-                else self.training_char_ngram_cache
+                self.training_char_ngram_cache
+                if use_training_values and self.training_char_ngram_cache is not None
+                else self.ngram_vectorizer_char.transform(documents)
             )
 
             X = combine_spmatrix(X, X_char)
 
         if self.use_word_ngram:
             X_word = (
-                self.ngram_vectorizer_word.transform(documents)
-                if use_training_values and self.training_word_ngram_cache is None
-                else self.training_word_ngram_cache
+                self.training_word_ngram_cache
+                if use_training_values and self.training_word_ngram_cache is not None
+                else self.ngram_vectorizer_word.transform(documents)
             )
 
             X = combine_spmatrix(X, X_word)
@@ -179,7 +179,8 @@ class StylometricModel:
     ) -> ndarray:
         readibility_scores = (
             self.training_readibility_scores_cache
-            if use_training_values and self.training_readibility_scores_cache is not None
+            if use_training_values
+            and self.training_readibility_scores_cache is not None
             else get_document_metrics_as_feature(
                 documents=documents, metric_func=get_flesch_reading_ease_score
             )
