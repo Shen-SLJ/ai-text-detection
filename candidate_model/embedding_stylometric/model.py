@@ -49,8 +49,9 @@ class EmbeddingStylometricModel:
         self.stylometric_model.train()
 
         features = self.__get_feature_representation(self.train_documents)
-
         self.classifier.fit(features, self.train_labels)
+
+        return self
 
     def __get_feature_representation(self, documents: Iterable[str]) -> spmatrix:
         embeddings: ndarray = self.embedder.encode(
