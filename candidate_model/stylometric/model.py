@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Iterable
+from typing import Iterable, Union
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import LinearSVC
 from sklearn.impute import SimpleImputer
@@ -42,10 +42,10 @@ class StylometricModel:
         self.readibility_normalizer = StandardScaler()
         self.burstiness_imputer = SimpleImputer(missing_values=np.nan, strategy="mean")
         self.readibility_imputer = SimpleImputer(missing_values=np.nan, strategy="mean")
-        self.training_burstiness_scores_cache = None
-        self.training_readibility_scores_cache = None
-        self.training_char_ngram_cache = None
-        self.training_word_ngram_cache = None
+        self.training_burstiness_scores_cache: Union[ndarray, None] = None
+        self.training_readibility_scores_cache: Union[ndarray, None] = None
+        self.training_char_ngram_cache: Union[spmatrix, None] = None
+        self.training_word_ngram_cache: Union[spmatrix, None] = None
 
         self.ngram_vectorizer_word = TfidfVectorizer(
             analyzer="word",
