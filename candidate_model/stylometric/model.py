@@ -9,7 +9,7 @@ from utils.stylometric_utils import (
     get_sentence_burstiness_score,
     get_flesch_reading_ease_score,
 )
-from utils.vector_manip_utils import combine_spmatrix, combine_spmatrix_with_1d_nparrays
+from utils.vector_manip_utils import combine_spmatrix, combine_spmatrix_with_nparrays
 from utils.stylometric_utils import get_document_metrics_as_feature
 from numpy import ndarray
 from scipy.sparse import spmatrix
@@ -139,14 +139,14 @@ class StylometricModel:
                 documents=documents, use_training_cache=use_training_cache
             )
 
-            X = combine_spmatrix_with_1d_nparrays(X, [burstiness_scores])
+            X = combine_spmatrix_with_nparrays(X, [burstiness_scores])
 
         if self.use_readibility_score:
             readibility_scores = self.__get_z_normalised_readibility_scores(
                 documents=documents, use_training_cache=use_training_cache
             )
 
-            X = combine_spmatrix_with_1d_nparrays(X, [readibility_scores])
+            X = combine_spmatrix_with_nparrays(X, [readibility_scores])
 
         if X is None:
             raise ValueError("At least one feature type must be selected.")

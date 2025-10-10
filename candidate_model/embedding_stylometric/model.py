@@ -4,7 +4,7 @@ from sklearn.calibration import CalibratedClassifierCV
 from candidate_model.stylometric.model import StylometricModel
 from utils.pickle_utils import save_to_pickle
 from utils.gpu_utils import is_gpu_available
-from utils.vector_manip_utils import combine_spmatrix_with_1d_nparrays
+from utils.vector_manip_utils import combine_spmatrix_with_nparrays
 from numpy import ndarray
 from sentence_transformers import SentenceTransformer
 from scipy.sparse import spmatrix
@@ -53,18 +53,18 @@ class EmbeddingStylometricModel:
         self.classifier.fit(features, self.train_labels)
 
     def __get_feature_representation(self, documents: Iterable[str]) -> spmatrix:
-        self.embeddings: ndarray = self.embedder.encode(
+        embeddings: ndarray = self.embedder.encode(
             sentences=documents,
             convert_to_numpy=True,
             show_progress_bar=True,
             normalize_embeddings=True,
         )
-        self.stylometric_features = self.stylometric_model.get_feature_representation(
+        stylometric_features = self.stylometric_model.get_feature_representation(
             documents=documents
         )
 
-        combined_features = combine_spmatrix_with_1d_nparrays(
-            sparse_matrix=self.stylometric_features, nparrays=[self.embeddings]
+        combined_features = combine_spmatrix_with_nparrays(
+            sparse_matrix=stylometric_features, nparrays=[embeddings]
         )
 
         return combined_features

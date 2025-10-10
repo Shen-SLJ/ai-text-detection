@@ -3,7 +3,7 @@ from typing import List, Optional, Callable
 from scipy.sparse import hstack, spmatrix
 
 
-def combine_spmatrix_with_1d_nparrays(
+def combine_spmatrix_with_nparrays(
     sparse_matrix: spmatrix, nparrays: List[np.ndarray]
 ) -> spmatrix:
     """
@@ -12,7 +12,7 @@ def combine_spmatrix_with_1d_nparrays(
     combined = sparse_matrix
 
     for nparray in nparrays:
-        combined = hstack([combined, nparray.reshape(-1, 1)])
+        combined = hstack([combined, nparray])
 
     return combined
 
