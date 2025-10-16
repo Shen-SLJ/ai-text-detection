@@ -1,8 +1,9 @@
 # https://huggingface.co/datasets/dmitva/human_ai_generated_text
 
 from typing import Optional
-from pandas import Series, read_parquet
+from pandas import Series, read_parquet, DataFrame
 from utils.path_utils import abs_path_from_project_path
+import pandas as pd
 
 DATASET_PATH = abs_path_from_project_path("dataset_processing/oketunji/part0.parquet")
 
@@ -16,6 +17,9 @@ class OketunjiDataset:
 
     Source: https://huggingface.co/datasets/dmitva/human_ai_generated_text
     """
+
+    __X_NAME = "text"
+    __Y_NAME = "label"
 
     @staticmethod
     def get_randomly_sampled(
@@ -38,4 +42,19 @@ class OketunjiDataset:
             n=ai_sample_n, random_state=ai_random_state
         )
 
-        return human_series, ai_series
+        human_df = DataFrame(human_series)
+        human_df.rename(columns={"human_text": OketunjiDataset.__X_NAME}, inplace=True)
+        human_df["label"] = 0
+
+        ai_df = DataFrame(ai_series)
+        ai_df.rename(columns={"ai_text": OketunjiDataset.__X_NAME}, inplace=True)
+        ai_df["label"] = 1
+
+        combined_df = pd.concat([human_df, ai_df], axis=0).sample(
+            frac=1, random_state=0
+        )
+
+        return (
+            combined_df[OketunjiDataset.__X_NAME],
+            combined_df[OketunjiDataset.__Y_NAME],
+        )
