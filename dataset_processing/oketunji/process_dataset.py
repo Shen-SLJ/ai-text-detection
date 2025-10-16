@@ -52,7 +52,7 @@ class OketunjiDataset:
 
         combined_df = pd.concat([human_df, ai_df], axis=0).sample(
             frac=1, random_state=0
-        )
+        ).reset_index(drop=True)
 
         return (
             combined_df[OketunjiDataset.__X_NAME],
