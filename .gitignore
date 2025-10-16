@@ -1,6 +1,6 @@
 .venv
 __pycache__
 saved
-dataset.csv
-dataset.parquet
+*/**/*.csv
+*/**/*.parquet
 .vscode

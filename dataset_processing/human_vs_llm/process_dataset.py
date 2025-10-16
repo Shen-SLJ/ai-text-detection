@@ -17,9 +17,9 @@ class HumanVsLLMDataset:
 
     @staticmethod
     def get_randomly_sampled(
-        human_sample_n: int = None,
+        human_sample_n: int,
+        ai_sample_n: int,
         human_random_state: Optional[int] = 0,
-        ai_sample_n: int = None,
         ai_random_state: Optional[int] = 0,
     ) -> tuple[Series, Series]:
         """Load dataset and get randomly sampled entries across the dataset for both ai generated & human generated partitions. Returns

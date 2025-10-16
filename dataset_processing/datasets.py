@@ -1,15 +1,20 @@
 import pandas
 from pandas import Series
 from dataset_processing.human_vs_llm.process_dataset import HumanVsLLMDataset
-from dataset_processing.pratyushi.process_dataset import PratyushiDataset
+from dataset_processing.oketunji.process_dataset import OketunjiDataset
 
 TRAIN_DATASETS = [
     HumanVsLLMDataset.get_randomly_sampled(
-        human_sample_n=25000,
+        human_sample_n=25000, 
         ai_sample_n=25000
     )
 ]
-EVAL_DATASETS = [PratyushiDataset.get()]
+EVAL_DATASETS = [
+    OketunjiDataset.get_randomly_sampled(
+        human_sample_n=1000, 
+        ai_sample_n=1000
+    )
+]
 
 
 def get_train_dataset() -> tuple[Series, Series]:
@@ -44,6 +49,7 @@ def __concatenate_dataset(
     y = pandas.concat(y_list, axis=0).astype(int)
 
     return X, y
+
 
 def __print_dataset_composition(X: Series, y: Series, dataset_name: str):
     print(f"{dataset_name} dataset composition: X.head(3) -> \n{X.head(3)}\n")
