@@ -1,4 +1,3 @@
-# https://huggingface.co/datasets/dmitva/human_ai_generated_text
 
 from typing import Optional
 from pandas import Series, read_parquet, DataFrame
@@ -41,18 +40,22 @@ class OketunjiDataset:
         ai_series = dataset["ai_text"].sample(
             n=ai_sample_n, random_state=ai_random_state
         )
+        human_df = DataFrame(
+            {
+                OketunjiDataset.__X_NAME: human_series,
+                OketunjiDataset.__Y_NAME: 0,
+            }
+        )
+        ai_df = DataFrame(
+            {
+                OketunjiDataset.__X_NAME: ai_series,
+                OketunjiDataset.__Y_NAME: 1,
+            }
+        )
 
-        human_df = DataFrame(human_series)
-        human_df.rename(columns={"human_text": OketunjiDataset.__X_NAME}, inplace=True)
-        human_df["label"] = 0
-
-        ai_df = DataFrame(ai_series)
-        ai_df.rename(columns={"ai_text": OketunjiDataset.__X_NAME}, inplace=True)
-        ai_df["label"] = 1
-
-        combined_df = pd.concat([human_df, ai_df], axis=0).sample(
+        combined_df = pd.concat([human_df, ai_df], axis=0, ignore_index=True).sample(
             frac=1, random_state=0
-        ).reset_index(drop=True)
+        )
 
         return (
             combined_df[OketunjiDataset.__X_NAME],
